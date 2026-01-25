@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Получаем название ветки
+branch_name=$(git branch --show-current)
+
+# Пропускаем для основных веток
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "master" ] || [ "$branch_name" = "develop" ]; then
+  exit 0
+fi
+
+# Если название ветки пустое, выходим
+if [ -z "$branch_name" ]; then
+  exit 0
+fi
+
+# Читаем первое сообщение коммита
+commit_msg=$(head -n 1 "$1")
+
+# Если сообщение уже начинается с названия ветки, ничего не делаем
+if echo "$commit_msg" | grep -qE "^$branch_name "; then
+  exit 0
+fi
+
+# Если сообщение соответствует формату Conventional Commits (type: subject)
+# и не начинается с названия ветки, добавляем название ветки
+if echo "$commit_msg" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+"; then
+  # Добавляем название ветки в начало первой строки
+  sed -i.bak "1s/^/$branch_name /" "$1"
+  rm -f "$1.bak" 2>/dev/null
+fi

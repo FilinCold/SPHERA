@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Проверка названия ветки
+branch_name=$(git branch --show-current)
+
+# Разрешаем ветки HOTFIX (в любом регистре)
+if echo "$branch_name" | grep -qiE "^hotfix"; then
+  # HOTFIX ветки разрешены
+  :
+else
+  # Запрещаем ветки в формате feat/, fix/, chore/ и т.д.
+  if echo "$branch_name" | grep -qE "^(feat|fix|chore|docs|style|refactor|perf|test)/"; then
+    echo "❌ Ошибка: Ветка не должна начинаться с feat/, fix/, chore/ и т.д."
+    echo "✅ Используйте формат: SPH-1, SPH-123, HOTFIX, или другой формат с дефисом и цифрами"
+    echo "Текущая ветка: $branch_name"
+    exit 1
+  fi
+fi
+
+echo "🔍 Запуск проверок перед коммитом..."
+
+# 1. Форматирование и линтинг изменённых файлов
+echo "📝 Проверка форматирования и линтинга изменённых файлов..."
+pnpm lint-staged
+
+# 2. Полная проверка линтинга
+echo "🔍 Полная проверка линтинга..."
+pnpm lint || {
+  echo "❌ Ошибки линтинга! Исправьте ошибки перед коммитом."
+  exit 1
+}
+
+# 3. Проверка типов TypeScript
+echo "📘 Проверка типов TypeScript..."
+pnpm type-check || {
+  echo "❌ Ошибки типов! Исправьте ошибки перед коммитом."
+  exit 1
+}
+
+# 4. Проверка сборки
+echo "🏗️  Проверка сборки приложения..."
+pnpm build || {
+  echo "❌ Ошибка сборки! Исправьте ошибки перед коммитом."
+  exit 1
+}
+
+echo "✅ Все проверки пройдены успешно!"

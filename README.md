@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Sphera Frontend Boilerplate (Next.js App Router)
 
-## Getting Started
+Инфраструктурный каркас под HR-продукт. Без бизнес-фич — только “рельсы” для стажёров.
 
-First, run the development server:
+### Требования окружения
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node 20 (см. `.nvmrc`), pnpm 10+.
+- OS: macOS/Linux/WSL, любой терминал с git hooks.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Быстрый старт
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Установи версии: `nvm use` (или установи Node 20) и `corepack enable`.
+2. Установи зависимости: `pnpm install`.
+3. Скопируй env: `cp .env.example .env.local` и выставь значения.
+4. Запусти: `pnpm dev` → http://localhost:3000.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Основные скрипты:
 
-## Learn More
+- `pnpm dev` — dev-сервер.
+- `pnpm lint` — ESLint.
+- `pnpm build` — prod-сборка.
+- `pnpm format` / `pnpm format:check` — Prettier.
 
-To learn more about Next.js, take a look at the following resources:
+### Env
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Заполняется только публичными переменными (см. `.env.example`). Валидация — `src/shared/config/env.ts` через zod; при ошибке билд/SSR падает с понятным сообщением.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Архитектура
 
-## Deploy on Vercel
+Проект использует **Feature-Sliced Design (FSD)** для организации кода. Подробности и примеры см. в `docs/ARCHITECTURE.md`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Слои FSD:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **`src/app`** — маршруты App Router (layouts, templates, pages). Минимум логики; композиция виджетов.
+- **`src/shared`** — инфраструктура: общие стили, утилиты, конфиги, store core. Переиспользуемый код без бизнес-логики.
+- **`src/domains`** — доменные модули: модели данных, репозитории (API-клиенты), сервисы, сторы MobX. Каждый домен изолирован.
+- **`src/widgets`** — UI-блоки: сборка доменных данных в переиспользуемые UI-компоненты. Виджеты используют домены и shared UI.
+
+Импорты через алиас `@/...` (см. `tsconfig.json`).
+
+### MobX
+
+- `RootStore` создаётся внутри `StoreProvider` через `useMemo` + `enableStaticRendering`, что безопасно для SSR и изолирует запросы.
+- Доступ к стору через хук `useStores()` из `@/shared/store` в любом компоненте.
+- Добавляя новые сторы, инициализируй их в конструкторе RootStore и храни ссылку на `root` для кросс-сторовых зависимостей.
+- Избегай глобальных синглтонов: стор живёт в провайдере (один экземпляр на провайдер, не глобально).
+- См. `src/shared/store` и подробности в `docs/ARCHITECTURE.md`.
+
+### Как добавлять фичи
+
+Подробный пример с кодом см. в `docs/ARCHITECTURE.md` (раздел "Пример: Страница профиля пользователя").
+
+**Алгоритм:**
+
+1. **Определи домен**: `src/domains/<domain>` — модели, репозитории (API-клиенты), сервисы, сторы.
+2. **Зарегистрируй стор**: добавь в конструктор `RootStore` (см. `src/shared/store/root-store.ts`).
+3. **Создай виджет**: `src/widgets/<feature>` — UI-компонент, использующий домен через `useStores()`.
+4. **Создай страницу**: `src/app/<route>/page.tsx` — композиция виджетов, минимум логики.
+
+**Принципы:**
+
+- Домены изолированы: `domains/user` не импортирует `domains/product`.
+- Виджеты используют домены: `widgets/user-profile` использует `domains/user`.
+- Страницы композируют виджеты: `app/profile` использует `widgets/user-profile`.
+- Shared — только инфраструктура: утилиты, стили, конфиги без бизнес-логики.
+
+### Правила Do / Don't
+
+**Do:**
+
+- Держи бизнес-логику в доменных слоях (`src/domains`), UI — в виджетах (`src/widgets`).
+- Используй MobX через RootStore, регистрируй сторы в конструкторе, без глобальных singletons.
+- Импортируй только через алиасы `@/...`.
+- Соблюдай порядок слоёв: shared → domains → widgets → app.
+
+**Don't:**
+
+- Класть бизнес-код в `shared/` (только инфраструктура).
+- Импортировать домены напрямую в страницы (используй виджеты).
+- Импортировать один домен в другой напрямую (используй кросс-доменные сервисы в shared при необходимости).
+- Добавлять сторонние стейт-менеджеры/UI-киты без обсуждения.
+- Типы/интерфейсы без строгих опций TS (strict включён).
+
+### CI
+
+GitHub Actions: install → lint → build (Node 20, pnpm). См. `.github/workflows/ci.yml`.
+
+### Дополнительно
+
+- Pre-commit: husky + lint-staged (`pnpm prepare` после clone).
+- Детали по процессу и архитектуре: `docs/CONTRIBUTING.md`, `docs/ARCHITECTURE.md`, `docs/ONBOARDING.md`.
