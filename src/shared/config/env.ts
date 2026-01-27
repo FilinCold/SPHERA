@@ -28,6 +28,7 @@ export const getPublicEnv = (): PublicEnv => {
   }
 
   cachedEnv = Object.freeze(parsed.data) as PublicEnv;
+
   return cachedEnv;
 };
 
