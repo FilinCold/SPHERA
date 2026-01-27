@@ -20,7 +20,12 @@ export default defineConfig([
       import: eslintPluginImport,
     },
     rules: {
-      "prettier/prettier": "error",
+      "prettier/prettier": [
+        "error",
+        {
+          endOfLine: "auto",
+        },
+      ],
 
       // Отступы между выражениями
       "padding-line-between-statements": [
