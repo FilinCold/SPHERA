@@ -2,9 +2,10 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { execSync } = require("child_process");
 let branchName = "";
+
 try {
   branchName = execSync("git branch --show-current", { encoding: "utf-8" }).trim();
-} catch (e) {
+} catch (_e) {
   // Если не удалось получить ветку, оставляем пустым
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, type PropsWithChildren, useContext, useMemo } from "react";
 import { enableStaticRendering } from "mobx-react-lite";
+import { createContext, type PropsWithChildren, useContext, useMemo } from "react";
 
 import { createRootStore, type RootStore } from "./root-store";
 
