@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Modal } from "@/shared/components/Modal/Modal";
+import { Modal } from "@/shared/components/Modal";
 import { Button } from "@/shared/ui/Button";
 
 export default function TestPage() {
