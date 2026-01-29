@@ -12,4 +12,6 @@ export interface SliderProps {
   interval?: number;
   showDots?: boolean;
   showArrows?: boolean;
+  isDots?: boolean;
+  isButtons?: boolean;
 }

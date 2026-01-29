@@ -1,4 +1,4 @@
-import tseslint from "@typescript-eslint/eslint-plugin";
+//import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import { defineConfig, globalIgnores } from "eslint/config";
 import eslintPluginPrettier from "eslint-plugin-prettier";
@@ -15,7 +15,7 @@ export default defineConfig([
       parser: tsParser,
     },
     plugins: {
-      "@typescript-eslint": tseslint,
+      //"@typescript-eslint": tseslint,
       prettier: eslintPluginPrettier,
       import: eslintPluginImport,
     },
@@ -104,3 +104,4 @@ export default defineConfig([
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".husky/**"]),
 ]);
+
