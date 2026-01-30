@@ -14,7 +14,9 @@ export const Modal = (props: ModalProps) => {
   const modalContentClassName = clsx(styles.modalContent, className);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         onClose();
@@ -31,15 +33,19 @@ export const Modal = (props: ModalProps) => {
     return null;
   }
 
+  const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContainer}>
-        <div className={modalContentClassName} onClick={(e) => e.stopPropagation()}>
-          <button type="button" className={styles.closeButton} onClick={onClose}>
-            <Image src={crossIcon} alt="Закрыть модальное окно" width={32} height={32} />
-          </button>
-          {children}
-        </div>
+        <button type="button" className={styles.closeButton} onClick={onClose}>
+          <Image src={crossIcon} alt="Закрыть модальное окно" width={26} height={26} />
+        </button>
+        <div className={modalContentClassName}>{children}</div>
       </div>
     </div>
   );
