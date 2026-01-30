@@ -1,3 +1,7 @@
+import Link from "next/link";
+
+import { Button } from "@/shared/ui/Button";
+
 export default function Home() {
   return (
     <main className="app-shell">
@@ -27,6 +31,9 @@ export default function Home() {
             Env валидируются в <code>src/shared/config/env.ts</code> при старте.
           </li>
         </ul>
+        <Link href="/testPage">
+          <Button>Перейти на страницу для тестирования компонентов</Button>
+        </Link>
       </section>
     </main>
   );
