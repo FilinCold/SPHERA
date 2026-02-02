@@ -1,3 +1,4 @@
+// здесь я специально оставил комментарии тк eslint ругается на эти конфиги при выполнении команды npx eslint . --fix
 //import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -104,4 +105,3 @@ export default defineConfig([
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".husky/**"]),
 ]);
-
