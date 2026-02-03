@@ -33,20 +33,17 @@ export const Modal = (props: ModalProps) => {
     return null;
   }
 
-  const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div className={styles.modalOverlay} onClick={handleOverlayClick}>
+    <>
+      <div className={styles.modalOverlay} onClick={onClose} />
       <div className={styles.modalContainer}>
-        <button type="button" className={styles.closeButton} onClick={onClose}>
-          <Image src={crossIcon} alt="Закрыть модальное окно" width={26} height={26} />
-        </button>
-        <div className={modalContentClassName}>{children}</div>
+        <div className={modalContentClassName}>
+          <button type="button" className={styles.closeButton} onClick={onClose}>
+            <Image src={crossIcon} alt="Закрыть модальное окно" width={26} height={26} />
+          </button>
+          {children}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
