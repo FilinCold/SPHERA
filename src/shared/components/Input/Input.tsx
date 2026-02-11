@@ -5,7 +5,7 @@ import styles from "./Input.module.scss";
 import type { InputProps } from "./types";
 
 export function Input(props: InputProps) {
-  const { label, error, inputUpgrade, className } = props;
+  const { label, error, inputUpgrade, className, ...rest } = props;
   const fieldClassName = clsx(styles.field, error && styles.error);
 
   const inputClassName = clsx(styles.input, className);
@@ -14,7 +14,7 @@ export function Input(props: InputProps) {
     <label className={styles.wrapper}>
       {label && <span className={styles.label}>{label}</span>}
       <div className={fieldClassName}>
-        <input className={inputClassName} />
+        <input className={inputClassName} {...rest} />
         {inputUpgrade && <div className={styles.inputUpgrade}>{inputUpgrade}</div>}
       </div>
       {error && <span className={styles.errorText}>{error}</span>}
