@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/shared/components/Button";
 import { Checkbox } from "@/shared/components/Checkbox/Checkbox";
 import { Input } from "@/shared/components/Input/Input";
+import { Modal } from "@/shared/components/Modal";
 
 import eyeClosed from "./assets/eye-off.svg";
 import eyeOpen from "./assets/eye-on.svg";
@@ -15,6 +16,7 @@ import type { RegistrationFormValues, RegistrationFormErrors } from "./types";
 import type { ChangeEvent, FocusEvent } from "react";
 
 export function RegistrationForm() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [values, setValues] = useState<RegistrationFormValues>({
     name: "",
     password: "",
@@ -55,6 +57,12 @@ export function RegistrationForm() {
         ...prev,
         [field]: value,
       }));
+      if (field === "checkAgreement") {
+        setTouched((prev) => ({
+          ...prev,
+          checkAgreement: true,
+        }));
+      }
     };
   }
 
@@ -134,18 +142,33 @@ export function RegistrationForm() {
       />
 
       <Checkbox
-        label="Я даю свое согласие на обработку персональных данных"
         checked={values.checkAgreement}
         onChange={handleChange("checkAgreement")}
+        error={touched.checkAgreement ? errors.checkAgreement : ""}
+        label={
+          <div className={styles.checkboxLabelWrapper}>
+            <span className={styles.labelText}>Я даю своё согласие на обработку</span>
+            <Button
+              className={styles.linkButton}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setIsModalOpen(true);
+              }}
+            >
+              персональных данных
+            </Button>
+          </div>
+        }
       />
-
-      {touched.checkAgreement && errors.checkAgreement && (
-        <div className={styles.checkboxError}>{errors.checkAgreement}</div>
-      )}
 
       <Button className={styles.submitBtn} disabled={!isValid} onClick={handleSubmit}>
         Зарегистрироваться
       </Button>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        Вы предоставляете нам ваши персональные данные
+      </Modal>
     </form>
   );
 }

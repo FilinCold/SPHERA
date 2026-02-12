@@ -10,13 +10,13 @@ export const Checkbox = (props: CheckboxProps) => {
   const checkboxClassName = clsx(styles.checkbox, error && styles.error);
 
   return (
-    <label className={wrapperClassName}>
+    <div className={wrapperClassName}>
       <div className={styles.control}>
         <input type="checkbox" className={checkboxClassName} {...rest} />
         <span className={styles.check} />
       </div>
-      <span className={styles.label}>{label}</span>
+      <label className={styles.label}>{label}</label>
       {error && <span className={styles.errorText}>{error}</span>}
-    </label>
+    </div>
   );
 };

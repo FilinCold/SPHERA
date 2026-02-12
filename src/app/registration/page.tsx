@@ -9,8 +9,14 @@ import styles from "./page.module.scss";
 export default function RegistrationPage() {
   return (
     <div className={styles.page}>
-      <Image className={styles.background} src={background} alt="Фон" />
-      <RegistrationForm />
+      <div className={styles.left}>
+        <Image src={background} alt="Фон" fill className={styles.background} loading="eager" />
+      </div>
+      <div className={styles.right}>
+        <div className={styles.formWrapper}>
+          <RegistrationForm />
+        </div>
+      </div>
     </div>
   );
 }

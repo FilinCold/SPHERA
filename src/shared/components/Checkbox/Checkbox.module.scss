@@ -1,6 +1,7 @@
 .wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   gap: 8px;
   width: 100%;
 }
@@ -46,4 +47,10 @@
   color: #b2b1b7;
   font-family: Inter;
   font-size: 12px;
+}
+
+.errorText {
+  font-family: SF Pro;
+  font-size: small;
+  color: rgba(255, 0, 0, 0.833);
 }

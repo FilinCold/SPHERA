@@ -1,6 +1,3 @@
-export interface ButtonProps {
-  children?: React.ReactNode;
-  onClick?: () => void;
-  className?: string | undefined;
-  disabled?: boolean;
-}
+import type { ComponentProps } from "react";
+
+export type ButtonProps = ComponentProps<"button">;
