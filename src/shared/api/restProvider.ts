@@ -1,4 +1,8 @@
-import type { RestProviderConfig } from "./type";
+import type { RestProviderConfig } from "./types";
+
+const DEFAULT_HEADERS: HeadersInit = {
+  "Content-Type": "application/json",
+};
 
 export class RestProvider {
   private baseUrl: string;
@@ -10,8 +14,13 @@ export class RestProvider {
   private async request(method: string, path: string, options: RequestInit = {}) {
     const url = `${this.baseUrl}${path}`;
 
+    const headers: HeadersInit = {
+      ...DEFAULT_HEADERS,
+      ...options.headers,
+    };
+
     try {
-      const res = await fetch(url, { method, ...options });
+      const res = await fetch(url, { method, ...options, headers });
 
       if (!res.ok) {
         throw new Error(`Ошибка: ${res.status}`);
@@ -40,7 +49,6 @@ export class RestProvider {
     return this.request("POST", path, {
       ...options,
       body: JSON.stringify(body),
-      headers: { "Content-Type": "application/json", ...options.headers },
     });
   }
 
@@ -52,7 +60,6 @@ export class RestProvider {
     return this.request("PUT", path, {
       ...options,
       body: JSON.stringify(body),
-      headers: { "Content-Type": "application/json", ...options.headers },
     });
   }
 }
