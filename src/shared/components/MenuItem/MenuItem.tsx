@@ -12,9 +12,12 @@ export function MenuItem(props: Props) {
   return (
     <Link
       href={menuItem.href}
-      className={clsx(styles.menuItem, className, isActive && styles.active)}
+      className={clsx(styles.menuItem, className, isActive ? styles.active : null)}
     >
-      {menuItem.icon && <Image className={styles.icon} src={menuItem.icon} alt={menuItem.name} />}
+      {menuItem.icon ? (
+        <Image className={styles.icon} src={menuItem.icon} alt={menuItem.name} />
+      ) : null}
+
       <span>{menuItem.name}</span>
     </Link>
   );

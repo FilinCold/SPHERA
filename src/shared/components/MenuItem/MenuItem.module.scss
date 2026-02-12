@@ -30,7 +30,9 @@
 
 .active {
   color: #4c7d87;
-
+  .icon {
+    filter: invert(48%) sepia(18%) saturate(536%) hue-rotate(143deg) brightness(92%) contrast(89%);
+  }
   &::after {
     content: "";
     pointer-events: none;

@@ -1,4 +1,4 @@
-import { homeIcon, usersIcon, coursesIcon } from "@/shared/components/Header/assets/index";
+import { homeIcon, usersIcon, coursesIcon } from "@/shared/assets/index";
 import { PAGES } from "@/shared/config/pages.config";
 
 export const MENU = [

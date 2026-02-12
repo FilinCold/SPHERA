@@ -3,23 +3,18 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
+import { notificationIcon, logoutIcon, settingsIcon } from "@/shared/assets";
 import { Button } from "@/shared/components/Button/Button";
-import {
-  avatar,
-  notificationIcon,
-  logoutIcon,
-  settingsIcon,
-  logoSfera,
-} from "@/shared/components/Header/assets/";
 import { MenuItem } from "@/shared/components/MenuItem/MenuItem";
 import { MENU } from "@/shared/config/menu.config";
 
+import { avatar, logoSfera } from "./assets/index";
 import styles from "./Header.module.scss";
 
 import type { HeaderProps } from "./types";
 
 export function Header(props: HeaderProps) {
-  const { userName = "Иван Петров", userAvatar = avatar } = props;
+  const { userName = "Без имени", userAvatar = avatar } = props;
   const pathname = usePathname();
 
   return (
