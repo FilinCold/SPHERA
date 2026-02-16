@@ -26,24 +26,27 @@ const RegistrationFormView = () => {
         error={register.touched.email ? register.errors.email : ""}
       />
 
-      <Input
-        className={styles.input}
-        label="Пароль*"
-        placeholder="Введите пароль"
-        type={register.showPassword ? "text" : "password"}
-        value={register.values.password}
-        onChange={(e) => register.setField("password", e.target.value)}
-        onBlur={() => register.setTouched("password")}
-        error={register.touched.password ? register.errors.password : ""}
-        inputUpgrade={
-          <Image
-            src={register.showPassword ? eyeOpen : eyeClosed}
-            alt="toggle password"
-            onClick={register.togglePasswordVisibility}
-            className={styles.eyeIcon}
-          />
-        }
-      />
+      <div className={styles.passwordContainer}>
+        <Input
+          className={styles.input}
+          label="Пароль*"
+          placeholder="Введите пароль"
+          type={register.showPassword ? "text" : "password"}
+          value={register.values.password}
+          onChange={(e) => register.setField("password", e.target.value)}
+          onBlur={() => register.setTouched("password")}
+          error={register.touched.password ? register.errors.password : ""}
+          inputUpgrade={
+            <Image
+              src={register.showPassword ? eyeOpen : eyeClosed}
+              alt="toggle password"
+              onClick={register.togglePasswordVisibility}
+              className={styles.eyeIcon}
+            />
+          }
+        />
+        <Button className={styles.forgotPasswordButton}>Забыли пароль?</Button>
+      </div>
 
       <Button
         className={styles.submitBtn}

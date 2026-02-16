@@ -60,37 +60,23 @@
   height: auto;
 }
 
-.checkboxLabelWrapper {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: nowrap;
-}
-
 .labelText {
   white-space: nowrap;
   cursor: pointer;
 }
 
-.linkButton {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  color: #4c7d87;
-  cursor: pointer;
+.passwordContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.forgotPasswordButton {
+  margin: 0;
+  margin-top: 4px;
+  font-family: inter;
+  font-size: 14px;
+  color: #b2b1b7;
   text-decoration: underline;
-}
-
-.linkButton:hover {
-  opacity: 0.7;
-}
-
-.linkButton:focus {
-  outline: none;
-}
-
-.linkButton:focus-visible {
-  outline: 2px solid #4c7d87;
-  border-radius: 4px;
+  display: flex;
+  justify-content: flex-end;
 }
