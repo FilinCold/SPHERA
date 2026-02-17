@@ -1,9 +1,11 @@
 export type RegistrationFormValues = {
-  email: string;
+  name: string;
   password: string;
+  confirmPassword: string;
 };
 
 export type RegistrationFormErrors = {
-  email: string;
+  name: string;
   password: string;
+  confirmPassword: string;
 };

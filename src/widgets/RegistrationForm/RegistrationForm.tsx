@@ -18,35 +18,51 @@ const RegistrationFormView = () => {
     <form className={styles.form}>
       <Input
         className={styles.input}
-        label="Email*"
-        placeholder="Введите вашу почту"
-        value={register.values.email}
-        onChange={(e) => register.setField("email", e.target.value)}
-        onBlur={() => register.setTouched("email")}
-        error={register.touched.email ? register.errors.email : ""}
+        label="ФИО*"
+        placeholder="Введите ваше ФИО"
+        value={register.values.name}
+        onChange={(e) => register.setField("name", e.target.value)}
+        onBlur={() => register.setTouched("name")}
+        error={register.touched.name ? register.errors.name : ""}
       />
 
-      <div className={styles.passwordContainer}>
-        <Input
-          className={styles.input}
-          label="Пароль*"
-          placeholder="Введите пароль"
-          type={register.showPassword ? "text" : "password"}
-          value={register.values.password}
-          onChange={(e) => register.setField("password", e.target.value)}
-          onBlur={() => register.setTouched("password")}
-          error={register.touched.password ? register.errors.password : ""}
-          inputUpgrade={
-            <Image
-              src={register.showPassword ? eyeOpen : eyeClosed}
-              alt="toggle password"
-              onClick={register.togglePasswordVisibility}
-              className={styles.eyeIcon}
-            />
-          }
-        />
-        <Button className={styles.forgotPasswordButton}>Забыли пароль?</Button>
-      </div>
+      <Input
+        className={styles.input}
+        label="Пароль*"
+        placeholder="Введите пароль"
+        type={register.showPassword ? "text" : "password"}
+        value={register.values.password}
+        onChange={(e) => register.setField("password", e.target.value)}
+        onBlur={() => register.setTouched("password")}
+        error={register.touched.password ? register.errors.password : ""}
+        inputUpgrade={
+          <Image
+            src={register.showPassword ? eyeOpen : eyeClosed}
+            alt="toggle password"
+            onClick={register.togglePasswordVisibility}
+            className={styles.eyeIcon}
+          />
+        }
+      />
+
+      <Input
+        className={styles.input}
+        label="Подтвердите пароль*"
+        placeholder="Подтвердите пароль"
+        type={register.showPassword ? "text" : "password"}
+        value={register.values.confirmPassword}
+        onChange={(e) => register.setField("confirmPassword", e.target.value)}
+        onBlur={() => register.setTouched("confirmPassword")}
+        error={register.touched.confirmPassword ? register.errors.confirmPassword : ""}
+        inputUpgrade={
+          <Image
+            src={register.showPassword ? eyeOpen : eyeClosed}
+            alt="toggle password"
+            onClick={register.togglePasswordVisibility}
+            className={styles.eyeIcon}
+          />
+        }
+      />
 
       <Button
         className={styles.submitBtn}
@@ -56,7 +72,7 @@ const RegistrationFormView = () => {
           register.submit();
         }}
       >
-        Войти
+        Завершить регистрацию
       </Button>
     </form>
   );

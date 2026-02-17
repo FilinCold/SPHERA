@@ -6,13 +6,14 @@ import type { RegistrationFormErrors, RegistrationFormValues } from "./model";
 
 export class RegisterStore {
   values: RegistrationFormValues = {
-    email: "",
+    name: "",
     password: "",
+    confirmPassword: "",
   };
-
   touched = {
-    email: false,
+    name: false,
     password: false,
+    confirmPassword: false,
   };
 
   showPassword = false;
@@ -24,12 +25,16 @@ export class RegisterStore {
 
   get errors(): RegistrationFormErrors {
     return {
-      email: !this.values.email
-        ? "Введите email"
-        : !this.isValidEmail(this.values.email)
-          ? "Введите корректный email"
+      name: !this.values.name
+        ? "Введите ваше ФИО"
+        : !this.isValidName(this.values.name)
+          ? "Введите ФИО полностью"
           : "",
-      password: this.values.password.length < 5 ? "Минимальная длинна пароля - 5 символов" : "",
+
+      password: this.values.password.length < 5 ? "Минимальная длина пароля - 5 символов" : "",
+
+      confirmPassword:
+        this.values.confirmPassword !== this.values.password ? "Пароли не совпадают" : "",
     };
   }
 
@@ -37,10 +42,10 @@ export class RegisterStore {
     return Object.values(this.errors).every((error) => !error);
   }
 
-  private isValidEmail(email: string) {
-    const rules = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  private isValidName(name: string) {
+    const rules = /^\S+\s+\S+\s+\S+$/;
 
-    return rules.test(email);
+    return rules.test(name);
   }
 
   setField(field: keyof RegistrationFormValues, value: string | boolean) {
@@ -65,9 +70,11 @@ export class RegisterStore {
 
   submit() {
     this.touched = {
-      email: true,
+      name: true,
       password: true,
+      confirmPassword: true,
     };
+
     if (this.isValid) {
       alert("Форма успешно отправлена!");
     }
