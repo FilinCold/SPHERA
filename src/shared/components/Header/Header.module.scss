@@ -20,6 +20,7 @@
   @media (max-width: 1280px) {
     margin-left: 50px;
   }
+
   @media (max-width: 940px) {
     margin-left: 30px;
   }
@@ -28,6 +29,7 @@
 .logo {
   margin-left: 40px;
   flex-shrink: 0;
+
   @media (max-width: 940px) {
     margin-left: 20px;
   }
@@ -36,6 +38,7 @@
 .logoPic {
   width: 124px;
   height: auto;
+
   @media (max-width: 940px) {
     width: 100px;
   }
@@ -44,6 +47,7 @@
 .iconButton {
   width: 24px;
   height: 24px;
+
   @media (max-width: 940px) {
     width: 16px;
     height: 16px;
@@ -86,6 +90,7 @@
   border-radius: 50%;
   width: 48px;
   height: 48px;
+
   @media (max-width: 940px) {
     border-radius: 40%;
     width: 26px;
