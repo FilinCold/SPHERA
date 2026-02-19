@@ -1,25 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 
-import { Button } from "@/shared/components/Button";
-import { Modal } from "@/shared/components/Modal";
+import { useStores } from "@/shared/store";
 
-export default function TestPage() {
-  const [isOpen, setIsOpen] = useState(false);
+const TestPage = observer(() => {
+  const { todos } = useStores();
+
+  useEffect(() => {
+    todos.fetchTodos();
+  }, [todos]);
+
+  if (todos.isLoading) {
+    return <div>Загрузка...</div>;
+  }
+  if (todos.error) {
+    return <div>Ошибка: {todos.error}</div>;
+  }
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Открыть модальное окно</Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div>
-          <p>content1</p>
-          <p>content2content2</p>
-          <p>content3content3content3</p>
-          <p>content4content4content4content4</p>
-          <p>content5</p>
-        </div>
-      </Modal>
+      <ul>
+        {todos.todos.map((todo) => (
+          <li key={todo.id}>
+            <h2>Задание: {todo.title}</h2>
+            <h3>Выполнено: {todo.completed ? "Да" : "Нет"}</h3>
+          </li>
+        ))}
+      </ul>
     </>
   );
-}
+});
+
+export default TestPage;
