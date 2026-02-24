@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+}
+
+.check {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.checkbox:checked + .check {
+  background: #4c7d87;
+  border-color: #4c7d87;
+}
+
+.checkbox:checked + .check::after {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 3px;
+}
+
+.label {
+  color: #b2b1b7;
+  font-family: Inter;
+  font-size: 12px;
+}
+
+.errorText {
+  font-family: SF Pro;
+  font-size: small;
+  color: rgba(255, 0, 0, 0.833);
+}
