@@ -1,0 +1,21 @@
+.field {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding-right: 40px;
+}
+.inputUpgrade {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+}
+
+.errorText {
+  font-family: SF Pro;
+  font-size: medium;
+  color: #ff9d97;
+}

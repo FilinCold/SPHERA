@@ -1,0 +1,82 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  gap: 32px;
+  max-width: 470px;
+  margin: 0 auto;
+}
+
+.input {
+  font-family: SF Pro;
+  font-size: 16px;
+  font-weight: 400;
+  border: none;
+  width: 470px;
+  height: 55px;
+  border-radius: 12px;
+  padding-left: 18px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background-color: white;
+  color: black;
+  border: 1px solid #b2b1b7;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4c7d87;
+}
+
+.submitBtn {
+  font-family: SF Pro;
+  font-weight: 400;
+  font-size: 20px;
+  width: 470px;
+  height: 66px;
+  border-radius: 100px;
+  background-color: white;
+  color: #4c7d87;
+  border: 1px solid;
+  border-color: #4c7d87;
+}
+
+.submitBtn:not(:disabled) {
+  background-color: #4c7d87;
+  color: white;
+  border-color: #4c7d87;
+}
+
+.submitBtn:not(:disabled):hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+.eyeIcon {
+  cursor: pointer;
+  width: 24px;
+  height: auto;
+}
+
+.labelText {
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.passwordContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.forgotPasswordButton {
+  margin: 0;
+  margin-top: 4px;
+  font-family: inter;
+  font-size: 14px;
+  color: #b2b1b7;
+  text-decoration: underline;
+  display: flex;
+  justify-content: flex-end;
+}
