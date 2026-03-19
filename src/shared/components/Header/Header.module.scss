@@ -1,6 +1,6 @@
 .headerContainer {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   height: 93px;
   align-items: center;
   background-color: white;
@@ -14,10 +14,11 @@
   display: flex;
   gap: 39px;
   white-space: nowrap;
+  justify-self: center;
 }
 
 .logo {
-  flex-shrink: 0;
+  justify-self: start;
 }
 
 .logoPic {
@@ -52,6 +53,7 @@
   @media (max-width: 940px) {
     gap: 6px;
   }
+  justify-self: end;
 }
 
 .userName {
