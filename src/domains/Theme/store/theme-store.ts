@@ -1,10 +1,10 @@
 import { makeAutoObservable } from "mobx";
 
-import type { RootStore } from "./root-store";
+import type { RootStore } from "../../../shared/store/root-store";
 
 type ThemePreference = "system" | "light" | "dark";
 
-export class UiStore {
+export class ThemeStore {
   theme: ThemePreference = "system";
   sidebarOpen = false;
 

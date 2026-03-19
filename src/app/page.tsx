@@ -31,8 +31,8 @@ export default function Home() {
             Env валидируются в <code>src/shared/config/env.ts</code> при старте.
           </li>
         </ul>
-        <Link href="/testPage">
-          <Button>Перейти на страницу для тестирования компонентов</Button>
+        <Link href="/todos">
+          <Button>Эталонная страница с туду</Button>
         </Link>
       </section>
     </main>

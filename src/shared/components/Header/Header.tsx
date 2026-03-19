@@ -38,11 +38,8 @@ export function Header(props: HeaderProps) {
         <Button className={styles.iconButton}>
           <Image className={styles.icon} src={notificationIcon} alt="Уведомления"></Image>
         </Button>
-        <Button className={styles.iconButton}>
-          <Image className={styles.icon} src={settingsIcon} alt="Настройки"></Image>
-        </Button>
         <Image className={styles.avatar} src={userAvatar} alt="Аватар"></Image>
-        <h2 className={styles.userName}>{userName}</h2>
+        <p className={styles.userName}>{userName}</p>
         <Button className={styles.iconButton}>
           <Image className={styles.icon} src={logoutIcon} alt="Выйти из системы"></Image>
         </Button>
