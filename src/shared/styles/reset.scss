@@ -38,4 +38,14 @@ button,
 textarea,
 select {
   font: inherit;
+  background: none;
+  color: black;
+  border: none;
+}
+
+input:focus,
+button:focus,
+textarea:focus,
+select:focus {
+  outline: none;
 }
