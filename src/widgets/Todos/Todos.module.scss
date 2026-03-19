@@ -1,0 +1,36 @@
+.container {
+  padding: 24px 12px;
+}
+
+.wrapperTodo {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputTodo {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.createTaskContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.createTask {
+  cursor: pointer;
+  background: var(--color-accent);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.createTask:disabled {
+  cursor: not-allowed;
+  background: gray;
+}
