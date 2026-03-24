@@ -2,21 +2,21 @@ import { makeAutoObservable } from "mobx";
 
 import { LoginStore } from "@/domains/login/login-store";
 import { RegisterStore } from "@/domains/register/register-store";
-
-import { TodoStore } from "./todos-store";
-import { UiStore } from "./ui-store";
+import { ThemeStore } from "@/domains/Theme/store/theme-store";
+import { TodoStore } from "@/domains/Todos/store/todos-store";
 
 export class RootStore {
-  ui: UiStore;
+  theme: ThemeStore;
   login: LoginStore;
   register: RegisterStore;
-  todos: TodoStore;
+  // Нужен для эталонного понимания написания виджетов и сторов
+  todoStore: TodoStore;
 
   constructor() {
-    this.ui = new UiStore(this);
+    this.theme = new ThemeStore(this);
     this.login = new LoginStore(this);
     this.register = new RegisterStore(this);
-    this.todos = new TodoStore(this);
+    this.todoStore = new TodoStore(this);
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
