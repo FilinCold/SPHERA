@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 import { CandidateStore } from "@/domains/Candidate/store/candidate-store";
+import { CompanyStore } from "@/domains/Company/store/company-store";
 import { LoginStore } from "@/domains/login/login-store";
 import { RegisterStore } from "@/domains/register/register-store";
 import { ThemeStore } from "@/domains/Theme/store/theme-store";
@@ -13,6 +14,7 @@ export class RootStore {
   // Нужен для эталонного понимания написания виджетов и сторов
   todoStore: TodoStore;
   candidateStore: CandidateStore;
+  companyStore: CompanyStore;
 
   constructor() {
     this.theme = new ThemeStore(this);
@@ -20,6 +22,7 @@ export class RootStore {
     this.register = new RegisterStore(this);
     this.todoStore = new TodoStore(this);
     this.candidateStore = new CandidateStore(this);
+    this.companyStore = new CompanyStore(this);
 
     makeAutoObservable(this, {}, { autoBind: true });
   }

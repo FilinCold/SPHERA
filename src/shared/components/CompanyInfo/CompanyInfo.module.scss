@@ -1,0 +1,43 @@
+.container {
+  background-color: #ffffff;
+  height: 132px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.blockName {
+  color: #232426;
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 400;
+}
+
+.companyName {
+  font-size: 24px;
+  font-family: SF Pro;
+  font-weight: 590;
+  color: #232426;
+}
+
+.subsrciption {
+  width: 258px;
+  font-size: 16px;
+  font-family: SF Pro;
+  font-weight: 400;
+  color: #232426;
+}
+
+.leftSide {
+  margin-left: 40px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightSide {
+  margin-right: 40px;
+  margin-top: 44px;
+  text-align: end;
+}
