@@ -1,0 +1,101 @@
+.card {
+  width: 316px;
+  height: 506px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: white;
+}
+
+.active {
+  background: #4dcd8840;
+}
+
+.archived {
+  background: #4d8fcd80;
+}
+
+.deleted {
+  background: #ff9d9780;
+}
+
+.body {
+  padding: 16px;
+}
+
+.title {
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: #666;
+}
+
+.meta {
+  margin-top: 12px;
+}
+
+.metaHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.users {
+  display: flex;
+  margin-top: 8px;
+}
+
+.avatar {
+  border-radius: 50%;
+  border: 2px solid white;
+
+  &:not(:first-child) {
+    margin-left: -10px;
+  }
+}
+
+.count {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.openButton {
+  background: #0b99c1;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.copyButton {
+  background: #eee;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
