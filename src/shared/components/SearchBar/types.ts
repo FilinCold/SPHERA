@@ -21,8 +21,6 @@ export interface SearchBarProps {
 
   searchPlaceholder?: string;
 
-  onSearch: (params: SearchParams) => void;
-
   shopOptions?: Option[];
   organizationOptions?: Option[];
 }

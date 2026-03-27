@@ -47,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             usersCount={89}
             date="20.02.2026"
             link="#"
+            users={[]}
           />
 
           <SearchBar />
