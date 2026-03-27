@@ -12,7 +12,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   breadcrumbs,
   totalCount = 0,
   searchPlaceholder = "Поиск",
-  onSearch,
   shopOptions = [],
   organizationOptions = [],
 }) => {
@@ -38,7 +37,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       ...(organization ? { organization } : {}),
     };
 
-    onSearch(params);
+    // onSearch(params);
   };
 
   // fallback чтобы всегда были хлебные крошки

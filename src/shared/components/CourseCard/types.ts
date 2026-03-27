@@ -1,3 +1,5 @@
+import type { UserAvatar } from "../CompanyCard/types";
+
 export type CourseStatus = "active" | "archived" | "deleted";
 
 export interface CourseCardProps {
