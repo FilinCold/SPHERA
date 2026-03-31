@@ -1,0 +1,116 @@
+.candidateBlock {
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background-color: #ffffff;
+}
+
+.profilePic {
+  margin-left: 40px;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+.info {
+  margin-left: 21px;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  max-width: 245px;
+}
+
+.profession {
+  font-size: 18px;
+  color: #0b99c1;
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.name {
+  font-size: 16px;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  color: #000000;
+}
+
+.date {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 500;
+  color: #b2b1b7;
+}
+
+.progressBlock {
+  flex: 1;
+  margin-left: 40px;
+  margin-right: 64px;
+  margin-bottom: 24px;
+}
+
+.courseName {
+  font-size: 16px;
+  color: #9aa0a6;
+  font-weight: 400;
+}
+
+.progressBar {
+  height: 10px;
+  background: #4dcd8840;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+
+.progressFill {
+  height: 100%;
+  background: #4dcd88;
+  border-radius: 4px;
+}
+
+.progressText {
+  font-size: 12px;
+  color: #9aa0a6;
+  margin-top: 4px;
+}
+
+.bookmarkBlock {
+  display: flex;
+  align-items: center;
+}
+
+.progressPercent {
+  font-weight: 400;
+  font-size: 16px;
+  color: #9aa0a6;
+  justify-content: flex-end;
+}
+
+.bookmark {
+  margin-top: 10px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: 0.2s;
+  margin-right: 61px;
+}
+
+.bookmark:hover {
+  opacity: 0.5;
+}
+
+.bookmark.active {
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgba(255, 238, 46, 0.861));
+}
