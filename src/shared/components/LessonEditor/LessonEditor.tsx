@@ -5,7 +5,12 @@ import { useEffect, useRef } from "react";
 import type QuillType from "quill";
 import "quill/dist/quill.snow.css";
 
-export default function LessonEditor() {
+interface LessonEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function LessonEditor({ value, onChange }: LessonEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const quillRef = useRef<QuillType | null>(null);
 
@@ -28,10 +33,28 @@ export default function LessonEditor() {
           ],
         },
       });
+
+      quillRef.current.root.innerHTML = value;
+
+      quillRef.current.on("text-change", () => {
+        const html = quillRef.current?.root.innerHTML || "";
+
+        onChange(html);
+      });
     };
 
     initQuill();
   }, []);
+
+  useEffect(() => {
+    if (!quillRef.current) return;
+
+    const currentHTML = quillRef.current.root.innerHTML;
+
+    if (value !== currentHTML) {
+      quillRef.current.root.innerHTML = value;
+    }
+  }, [value]);
 
   return (
     <div style={{ maxWidth: 800 }}>

@@ -1,9 +1,12 @@
-import LessonEditor from "@/shared/components/LessonEditor/LessonEditor";
+"use client";
 
-export default function Home() {
+import { LessonEditorWidget } from "@/widgets/LessonEditorWidget";
+
+export default function LessonPage() {
   return (
-    <main>
-      <LessonEditor />
-    </main>
+    <>
+      <h1>Создание урока</h1>
+      <LessonEditorWidget />
+    </>
   );
 }
