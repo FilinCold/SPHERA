@@ -1,0 +1,68 @@
+.wrapper {
+  margin-top: 20px;
+  margin-left: 40px;
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  width: 300px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  font-size: 28px;
+  font-family: Inter;
+  font-weight: 600;
+}
+
+.statWrapper {
+  display: flex;
+  gap: 30px;
+}
+
+.totalBlock {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.total {
+  font-family: Inter;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 48px;
+  color: #0b99c1;
+  margin: 0;
+}
+
+.totalLabel {
+  margin: 0;
+  font-size: 16px;
+  color: #0b99c1;
+}
+
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+}
+
+.chartCard {
+  flex: 1;
+  max-width: 100%;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.3);
+}

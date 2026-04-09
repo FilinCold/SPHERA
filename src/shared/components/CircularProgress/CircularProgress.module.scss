@@ -1,0 +1,55 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.circle {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.circle svg {
+  transform: rotate(-90deg);
+}
+
+.bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 6;
+}
+
+.progress {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.label {
+  font-size: 14px;
+  color: #232426;
+}
+
+.count {
+  font-size: 12px;
+  color: #b2b1b7;
+}
