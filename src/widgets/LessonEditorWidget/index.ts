@@ -1,1 +1,1 @@
-export { LessonEditorWidget } from "./LessonEditorWidget";
+export { LessonEditorWidget as default } from "./LessonEditorWidget";

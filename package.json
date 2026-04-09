@@ -28,6 +28,8 @@
     }
   },
   "dependencies": {
+    "@rpldy/uploader": "^1.13.0",
+    "@rpldy/uploady": "^1.13.0",
     "clsx": "2.1.1",
     "mobx": "6.15.0",
     "mobx-react-lite": "4.1.1",

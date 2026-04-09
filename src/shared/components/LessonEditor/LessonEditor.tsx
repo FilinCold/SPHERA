@@ -2,44 +2,58 @@
 
 import { useEffect, useRef } from "react";
 
+import type { LessonEditorProps } from "./type";
 import type QuillType from "quill";
 import "quill/dist/quill.snow.css";
 
-interface LessonEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-}
+export function LessonEditor(props: LessonEditorProps) {
+  const { value, onChange, onVideoClick } = props;
 
-export function LessonEditor({ value, onChange }: LessonEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const quillRef = useRef<QuillType | null>(null);
+
+  const isInternalChange = useRef(false);
 
   useEffect(() => {
     const initQuill = async () => {
       const Quill = (await import("quill")).default;
 
-      if (!editorRef.current) return;
+      if (!editorRef.current || quillRef.current) return;
 
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
         placeholder: "Введите описание урока",
         modules: {
-          toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ["bold", "italic", "underline"],
-            ["link", "image"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["clean"],
-          ],
+          toolbar: {
+            container: [
+              [{ header: [1, 2, 3, false] }],
+              ["bold", "italic", "underline"],
+              [{ color: [] }, { background: [] }],
+              ["link", "image", "video"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              ["clean"],
+            ],
+            handlers: {
+              video: () => onVideoClick?.(),
+            },
+          },
         },
       });
 
-      quillRef.current.root.innerHTML = value;
+      if (value) {
+        quillRef.current.clipboard.dangerouslyPasteHTML(value);
+      }
 
       quillRef.current.on("text-change", () => {
+        if (isInternalChange.current) return;
+
         const html = quillRef.current?.root.innerHTML || "";
 
-        onChange(html);
+        if (html === "<p><br></p>") {
+          onChange("");
+        } else {
+          onChange(html);
+        }
       });
     };
 
@@ -49,11 +63,23 @@ export function LessonEditor({ value, onChange }: LessonEditorProps) {
   useEffect(() => {
     if (!quillRef.current) return;
 
-    const currentHTML = quillRef.current.root.innerHTML;
+    const html = quillRef.current.root.innerHTML;
 
-    if (value !== currentHTML) {
-      quillRef.current.root.innerHTML = value;
+    if (value === html || (!value && html === "<p><br></p>")) {
+      return;
     }
+
+    isInternalChange.current = true;
+
+    if (!value) {
+      quillRef.current.setText("");
+    } else {
+      quillRef.current.clipboard.dangerouslyPasteHTML(value);
+    }
+
+    setTimeout(() => {
+      isInternalChange.current = false;
+    }, 0);
   }, [value]);
 
   return (
