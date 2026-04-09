@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 
 import { CandidateStore } from "@/domains/Candidate/store/candidate-store";
 import { CompanyStore } from "@/domains/Company/store/company-store";
-import { LessonStore } from "@/domains/Lesson/store/lesson-store";
 import { LoginStore } from "@/domains/login/login-store";
 import { RegisterStore } from "@/domains/register/register-store";
 import { ThemeStore } from "@/domains/Theme/store/theme-store";
@@ -16,7 +15,6 @@ export class RootStore {
   todoStore: TodoStore;
   candidateStore: CandidateStore;
   companyStore: CompanyStore;
-  lessonStore: LessonStore;
 
   constructor() {
     this.theme = new ThemeStore(this);
@@ -25,7 +23,6 @@ export class RootStore {
     this.todoStore = new TodoStore(this);
     this.candidateStore = new CandidateStore(this);
     this.companyStore = new CompanyStore(this);
-    this.lessonStore = new LessonStore(this);
 
     makeAutoObservable(this, {}, { autoBind: true });
   }
