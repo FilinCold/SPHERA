@@ -10,7 +10,6 @@ import { getPublicEnv } from "@/shared/config/env";
 import { Providers } from "./providers";
 
 import type { Metadata } from "next";
-
 // 👇 добавили обертку
 
 const geistSans = Geist({
@@ -36,23 +35,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Header />
           {children}
-
-          <CompanyCard />
-
-          <CourseCard
-            title="Работа с возражениями"
-            description="Lorem ipsum dolor sit amet..."
-            image="https://picsum.photos/403/300"
-            status="active"
-            usersCount={89}
-            date="20.02.2026"
-            link="#"
-            users={[]}
-          />
-
-          <SearchBar />
-
-          <PopupCardWrapper />
         </Providers>
       </body>
     </html>
