@@ -7,7 +7,7 @@ import { LoginForm } from "@/widgets/LoginForm/loginForm";
 import background from "./assets/background-for-reg.svg";
 import styles from "./page.module.scss";
 
-export default function RegistrationPage() {
+export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.left}>

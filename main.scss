@@ -1,21 +1,18 @@
-@import "./fonts";
-
 // Основные цвета
-$color-primary: #0B99C1;      // главный цвет
-$color-text: #232426;         // цвет текста
-$color-background: #FFFFFF;   // цвет фона
-$color-secondary: #F0FFFF;    // второстепенный цвет
+$color-primary: #0b99c1; // главный цвет
+$color-text: #232426; // цвет текста
+$color-background: #ffffff; // цвет фона
+$color-secondary: #f0ffff; // второстепенный цвет
 
 // Состояния
-$color-hover: #2BBAE2;        // ховер
-$color-active: #037E9F;       // нажатие
+$color-hover: #2bbae2; // ховер
+$color-active: #037e9f; // нажатие
 
 // Нейтральные
-$color-gray: #B2B1B7;         // серый
+$color-gray: #b2b1b7; // серый
 
 // Цвета активации
-$color-danger: #FF9D97;       // красный
-$color-success: #4DCD88;      // зеленый
-$color-info: #4D8FCD;         // синий
-$color-warning: #FFCF97;      // желтый
-
+$color-danger: #ff9d97; // красный
+$color-success: #4dcd88; // зеленый
+$color-info: #4d8fcd; // синий
+$color-warning: #ffcf97; // желтый

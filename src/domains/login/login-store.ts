@@ -157,8 +157,10 @@ export class LoginStore {
       email: true,
       password: true,
     };
-    if (this.isValid) {
-      alert("Форма успешно отправлена!");
+    if (!this.isValid) {
+      return;
     }
+
+    void this.root.auth.login(this.values.email, this.values.password);
   }
 }
