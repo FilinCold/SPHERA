@@ -6,4 +6,5 @@ const env = getPublicEnv();
 
 export const restProviderInstance = new RestProvider({
   baseUrl: env.NEXT_PUBLIC_API_URL,
+  useBffProxy: true,
 });

@@ -5,40 +5,68 @@ const DEFAULT_HEADERS: HeadersInit = {
 };
 
 export class RestProvider {
-  private baseUrl: string;
+  private readonly baseUrl: string;
+  private readonly useBffProxy: boolean;
 
   constructor(config: RestProviderConfig) {
-    this.baseUrl = config.baseUrl;
+    this.baseUrl = config.baseUrl.replace(/\/$/, "");
+    this.useBffProxy = config.useBffProxy ?? false;
   }
 
-  private async request(method: string, path: string, options: RequestInit = {}) {
-    const url = `${this.baseUrl}${path}`;
+  private resolveUrl(path: string): string {
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+    if (this.useBffProxy && typeof window !== "undefined") {
+      return `${window.location.origin}/api/proxy${normalizedPath}`;
+    }
+
+    return `${this.baseUrl}${normalizedPath}`;
+  }
+
+  private async request<T>(method: string, path: string, options: RequestInit = {}): Promise<T> {
+    const url = this.resolveUrl(path);
+    const useCredentials = this.useBffProxy && typeof window !== "undefined";
 
     const headers: HeadersInit = {
       ...DEFAULT_HEADERS,
       ...options.headers,
     };
 
-    try {
-      const res = await fetch(url, { method, ...options, headers });
+    const init: RequestInit = {
+      ...options,
+      method,
+      headers,
+    };
 
-      if (!res.ok) {
-        throw new Error(`Ошибка: ${res.status}`);
-      }
-
-      return await res.json();
-    } catch (error) {
-      console.error("Ошибка", error);
-      throw error;
+    if (useCredentials) {
+      init.credentials = "include";
+    } else if (options.credentials !== undefined) {
+      init.credentials = options.credentials;
     }
+
+    const res = await fetch(url, init);
+
+    if (!res.ok) {
+      const hasJsonResponse = res.headers.get("content-type")?.includes("application/json");
+      const responseBody = hasJsonResponse ? ((await res.json()) as { message?: string }) : null;
+      const message = responseBody?.message ?? `Ошибка запроса (${res.status})`;
+
+      throw new Error(message);
+    }
+
+    if (res.status === 204) {
+      return null as T;
+    }
+
+    return (await res.json()) as T;
   }
 
   public get<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request("GET", path, options);
+    return this.request<T>("GET", path, options);
   }
 
   public delete<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request("DELETE", path, options);
+    return this.request<T>("DELETE", path, options);
   }
 
   public post<TResponse, TBody>(
@@ -46,7 +74,7 @@ export class RestProvider {
     body: TBody,
     options: RequestInit = {},
   ): Promise<TResponse> {
-    return this.request("POST", path, {
+    return this.request<TResponse>("POST", path, {
       ...options,
       body: JSON.stringify(body),
     });
@@ -57,7 +85,7 @@ export class RestProvider {
     body: TBody,
     options: RequestInit = {},
   ): Promise<TResponse> {
-    return this.request("PUT", path, {
+    return this.request<TResponse>("PUT", path, {
       ...options,
       body: JSON.stringify(body),
     });

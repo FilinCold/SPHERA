@@ -13,7 +13,7 @@ import eyeOpen from "./assets/eye-on.svg";
 import styles from "./loginForm.module.scss";
 
 const LoginFormView = () => {
-  const { login } = useStores();
+  const { login, auth } = useStores();
 
   return (
     <>
@@ -60,14 +60,15 @@ const LoginFormView = () => {
 
         <Button
           className={styles.submitBtn}
-          disabled={!login.isValid}
+          disabled={!login.isValid || auth.isLoading}
           onClick={(e) => {
             e.preventDefault();
             login.submit();
           }}
         >
-          Войти
+          {auth.isLoading ? "Вход..." : "Войти"}
         </Button>
+        {auth.error ? <p>{auth.error}</p> : null}
       </form>
 
       <Modal isOpen={login.forgotPasswordSteps === "email"} onClose={login.closeForgotPassword}>

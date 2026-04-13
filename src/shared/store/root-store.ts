@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
+import { AuthStore } from "@/domains/auth/auth-store";
 import { CandidateStore } from "@/domains/Candidate/store/candidate-store";
 import { CompanyStore } from "@/domains/Company/store/company-store";
 import { LoginStore } from "@/domains/login/login-store";
@@ -10,6 +11,7 @@ import { TodoStore } from "@/domains/Todos/store/todos-store";
 
 export class RootStore {
   theme: ThemeStore;
+  auth: AuthStore;
   login: LoginStore;
   register: RegisterStore;
   // Нужен для эталонного понимания написания виджетов и сторов
@@ -20,6 +22,7 @@ export class RootStore {
 
   constructor() {
     this.theme = new ThemeStore(this);
+    this.auth = new AuthStore(this);
     this.login = new LoginStore(this);
     this.register = new RegisterStore(this);
     this.todoStore = new TodoStore(this);
