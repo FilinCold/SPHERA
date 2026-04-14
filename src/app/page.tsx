@@ -6,19 +6,6 @@ export default function Home() {
   return (
     <main className="app-shell">
       <section className="app-card">
-        <div className="app-card__header">
-          <div>
-            <p className="pill">Infrastructure</p>
-            <h1>Next.js + MobX Boilerplate</h1>
-          </div>
-          <p className="pill">Start here</p>
-        </div>
-
-        <p className="muted">
-          Минимальный каркас без бизнес-логики. Ознакомьтесь с README и docs, прежде чем добавлять
-          доменные модули и страницы.
-        </p>
-
         <ul className="list">
           <li>
             Инфраструктура и утилиты — в <code>src/shared</code>.

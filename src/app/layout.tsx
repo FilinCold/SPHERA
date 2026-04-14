@@ -1,13 +1,16 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
+import CompanyCard from "@/shared/components/CompanyCard/CompanyCard";
+import { CourseCard } from "@/shared/components/CourseCard/CourseCard";
 import { Header } from "@/shared/components/Header/Header";
+import PopupCardWrapper from "@/shared/components/popupCard/PopupCardWrapper";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { getPublicEnv } from "@/shared/config/env";
 
 import { Providers } from "./providers";
 
 import type { Metadata } from "next";
-
-import "@/shared/styles/globals.scss";
+// 👇 добавили обертку
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +26,7 @@ export const metadata: Metadata = {
   description: "Infrastructure rails for the HR product.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   getPublicEnv();
 
   return (
