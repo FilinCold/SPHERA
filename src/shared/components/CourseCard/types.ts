@@ -1,6 +1,4 @@
-import type { UserAvatar } from "../CompanyCard/types";
-
-export type CourseStatus = "active" | "archived" | "deleted";
+import type { CourseStatus, UserAvatar } from "../types";
 
 export interface CourseCardProps {
   title: string;
@@ -10,5 +8,5 @@ export interface CourseCardProps {
   usersCount: number;
   date: string;
   link: string;
-  users: UserAvatar[];
+  users?: UserAvatar[];
 }

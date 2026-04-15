@@ -3,16 +3,13 @@
 @use "./fonts";
 @use "./main";
 
-:root {
-  color-scheme: dark;
-}
-
 body {
-  background: #f1f1f1;
+  background: var(--color-background);
   color: var(--color-text);
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  font-family: var(--font-main);
 }
 
 a {

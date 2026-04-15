@@ -1,6 +1,6 @@
 import React from "react";
 
-import styles from "./popupCard.module.scss";
+import styles from "./PopupCard.module.scss";
 
 import type { PopupCardProps } from "./types";
 

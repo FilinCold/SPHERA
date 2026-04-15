@@ -2,49 +2,40 @@ import Link from "next/link";
 
 import styles from "./CompanyCard.module.scss";
 
-// 🔹 Заглушка API
-const getMockCompany = () => ({
-  id: "1",
-  name: 'ООО "Ромашка"',
-  subscriptionDate: "2026-02-18",
-});
+import type { CompanyCardProps } from "./types";
 
-const CompanyCard = () => {
-  const company = getMockCompany();
-
-  // Добавил тип для параметра
-  const getStatus = (subscriptionDate: string) => {
-    const today = new Date();
-    const subscriptionEnd = new Date(subscriptionDate);
-
-    return subscriptionEnd > today ? "Активно" : "Приостановлено";
-  };
-
-  const status = getStatus(company.subscriptionDate);
-  const formattedDate = new Date(company.subscriptionDate).toLocaleDateString("ru-RU");
+const CompanyCard = ({
+  name,
+  subscriptionDate,
+  status,
+  href = "#",
+  target = "_self",
+  companyId,
+}: CompanyCardProps) => {
+  const finalHref = companyId ? `/made-space/${companyId}` : href;
 
   return (
     <div className={styles.card}>
       <div className={styles.card__left}>
-        <h3 className={styles.card__title}>{company.name}</h3>
+        <h3 className={styles.card__title}>{name}</h3>
 
         <div className={styles.card__info}>
           <span className={styles.card__label}>Дата подписки до:</span>
-          <span className={styles.card__date}>{formattedDate}</span>
+          <span className={styles.card__date}>{subscriptionDate || "—"}</span>
         </div>
       </div>
 
       <div className={styles.card__right}>
         <div
           className={`${styles.status} ${
-            status === "Активно" ? styles["status--active"] : styles["status--inactive"]
+            status === "active" ? styles["status--active"] : styles["status--inactive"]
           }`}
         >
           <span className={styles.status__dot}></span>
-          {status}
+          {status === "active" ? "Активно" : "Приостановлено"}
         </div>
 
-        <Link href="#" className={styles.card__button}>
+        <Link href={finalHref} target={target} className={styles.card__button}>
           Смотреть
         </Link>
       </div>
