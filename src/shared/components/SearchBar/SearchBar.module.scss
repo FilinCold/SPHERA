@@ -1,9 +1,11 @@
+@use "../../styles/main.scss" as *;
+
 .wrapper {
-  width: 1440px;
-  height: 208px;
+  width: 100%;
+  min-height: 13rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .header {
@@ -15,23 +17,23 @@
 .left {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .breadcrumbs {
-  font-size: 14px;
-  color: #9ca3af;
+  font-size: 0.875rem;
+  color: $color-gray;
 }
 
 .title {
-  font-size: 32px;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   font-weight: 600;
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .inputWrapper {
@@ -39,38 +41,39 @@
 }
 
 .input {
-  padding: 10px 12px 10px 36px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  width: 260px;
+  padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid $color-gray;
+  width: min(100%, 16.25rem);
+  background: $color-background;
 }
 
 .icon {
   position: absolute;
-  left: 10px;
+  left: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .button {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   border: none;
 }
 
 .primary {
-  background: #0ea5e9;
-  color: white;
+  background: $color-primary;
+  color: $color-background;
 }
 
 .secondary {
-  background: #e5e7eb;
+  background: $color-secondary;
 }
 
 .filtersRow {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -83,31 +86,31 @@
 }
 
 .selectButton {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  border: 0.0625rem solid $color-gray;
+  border-radius: 0.5rem;
   cursor: pointer;
-  min-width: 180px;
-  background: white;
+  min-width: 11.25rem;
+  background: $color-background;
 }
 
 .dropdown {
   position: absolute;
   top: 110%;
   left: 0;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  background: $color-background;
+  border: 0.0625rem solid $color-gray;
+  border-radius: 0.5rem;
   width: 100%;
   z-index: 10;
 }
 
 .option {
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 
   &:hover {
-    background: #f3f4f6;
+    background: $color-secondary;
   }
 }
 
@@ -118,11 +121,25 @@
 }
 
 .count {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 0.875rem;
+  color: $color-gray;
 }
 
 .toggle {
   cursor: pointer;
-  color: #0ea5e9;
+  color: $color-primary;
+}
+
+@media (max-width: 64rem) {
+  .header,
+  .bottomRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .right,
+  .filtersRow {
+    flex-wrap: wrap;
+  }
 }
