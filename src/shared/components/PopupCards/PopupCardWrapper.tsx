@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import PopupCard from "./popupCard";
+import PopupCard from "./PopupCard";
 
 const PopupCardWrapper = () => {
   const [role, setRole] = useState("admin");
