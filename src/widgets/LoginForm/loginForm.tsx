@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input/Input";
-import { Modal } from "@/shared/components/Modal";
+import { Modal } from "@/shared/components/MenuItem/Modal";
 import { useStores } from "@/shared/store";
 
 import eyeClosed from "./assets/eye-off.svg";

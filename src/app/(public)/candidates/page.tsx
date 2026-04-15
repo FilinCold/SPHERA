@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/shared/components/Button";
-import { Modal } from "@/shared/components/Modal";
+import { Modal } from "@/shared/components/MenuItem/Modal";
 
 export default function TestPage() {
   const [isOpen, setIsOpen] = useState(false);

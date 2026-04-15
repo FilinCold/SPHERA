@@ -1,0 +1,129 @@
+.wrapper {
+  width: 1440px;
+  height: 208px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.breadcrumbs {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.input {
+  padding: 10px 12px 10px 36px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  width: 260px;
+}
+
+.icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.primary {
+  background: #0ea5e9;
+  color: white;
+}
+
+.secondary {
+  background: #e5e7eb;
+}
+
+/* FILTERS */
+.filtersRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.select {
+  position: relative;
+}
+
+.selectButton {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 180px;
+  background: white;
+}
+
+.dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  width: 100%;
+  z-index: 10;
+}
+
+.option {
+  padding: 8px 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.count {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.toggle {
+  cursor: pointer;
+  color: #0ea5e9;
+}

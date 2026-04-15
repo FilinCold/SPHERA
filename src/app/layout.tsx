@@ -7,8 +7,6 @@ import { Providers } from "./providers";
 
 import type { Metadata } from "next";
 
-import "@/shared/styles/globals.scss";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,11 +21,7 @@ export const metadata: Metadata = {
   description: "Infrastructure rails for the HR product.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   getPublicEnv();
 
   return (
