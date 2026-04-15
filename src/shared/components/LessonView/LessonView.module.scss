@@ -1,0 +1,44 @@
+.lesson {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.lesson__video {
+  margin-bottom: 20px;
+}
+
+.lesson__video video {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.lesson__content h1,
+.lesson__content h2,
+.lesson__content h3 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.lesson__content p {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.lesson__content ul,
+.lesson__content ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.lesson__content a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.lesson__content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 12px 0;
+}
