@@ -1,0 +1,77 @@
+.card {
+  width: 896px;
+  min-height: 296px; // 🔥 вместо height
+  background: #f3f4f6;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  background: #1f8aa3;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 16px 20px;
+}
+
+.body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr; // 💥 2 колонки как в макете
+  gap: 20px;
+  flex: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 14px;
+    color: #333;
+  }
+
+  input {
+    width: 100%; // 💥 важно
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 0 12px;
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: #1f8aa3;
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.cancel {
+  width: 140px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #1f8aa3;
+  background: transparent;
+  color: #1f8aa3;
+  cursor: pointer;
+}
+
+.submit {
+  width: 140px;
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  background: #1f8aa3;
+  color: white;
+  cursor: pointer;
+}
