@@ -7,17 +7,29 @@ import type { ChartProps } from "./types";
 
 export const Chart = ({ option }: ChartProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
+  const chartInstance = useRef<echarts.ECharts | null>(null);
 
   useEffect(() => {
     if (!chartRef.current) return;
 
-    const chart = echarts.init(chartRef.current);
+    chartInstance.current = echarts.init(chartRef.current);
 
-    chart.setOption(option);
+    chartInstance.current.setOption(option);
+
+    const resizeObserver = new ResizeObserver(() => {
+      chartInstance.current?.resize();
+    });
+
+    resizeObserver.observe(chartRef.current);
 
     return () => {
-      chart.dispose();
+      resizeObserver.disconnect();
+      chartInstance.current?.dispose();
     };
+  }, []);
+
+  useEffect(() => {
+    chartInstance.current?.setOption(option);
   }, [option]);
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
