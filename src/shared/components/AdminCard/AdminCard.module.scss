@@ -1,6 +1,6 @@
 .card {
   width: 896px;
-  min-height: 296px; // 🔥 вместо height
+  min-height: 296px;
   background: #f3f4f6;
   border-radius: 12px;
   display: flex;
@@ -19,8 +19,7 @@
 .body {
   padding: 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr; // 💥 2 колонки как в макете
-  gap: 20px;
+  grid-template-columns: 1fr 1fr;
   flex: 1;
 }
 
@@ -35,7 +34,7 @@
   }
 
   input {
-    width: 100%; // 💥 важно
+    width: 100%;
     height: 44px;
     border-radius: 8px;
     border: 1px solid #d1d5db;

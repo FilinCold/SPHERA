@@ -38,7 +38,6 @@ export const SimpleCard = ({ title, fields, onCancel, onSubmit, onChange }: Simp
       );
     }
 
-    // select
     if (field.type === "select") {
       return (
         <select

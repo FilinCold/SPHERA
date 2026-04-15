@@ -17,7 +17,6 @@ export const CourseCard = observer(
       store.setAvatars(users);
     }, [store, users]);
 
-    // 🔌 Заготовка под API (пока отключена)
     /*
   useEffect(() => {
     const fetchUsers = async () => {
