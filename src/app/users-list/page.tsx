@@ -5,9 +5,9 @@ import { useState } from "react";
 
 import ListOfUsers from "@/shared/components/ListOfUsers/ListOfUsers";
 import { ListOfUsersStore } from "@/shared/components/ListOfUsers/ListOfUsers.store";
-import PopupCard from "@/shared/components/PopupCard/popupCard";
-import { PopupCardStore } from "@/shared/components/PopupCard/PopupCard.store";
-import overlayStyles from "@/shared/components/PopupCard/popupOverlay.module.scss";
+import PopupCard from "@/shared/components/PopupCards/PopupCard";
+import { PopupCardStore } from "@/shared/components/PopupCards/PopupCard.store";
+import overlayStyles from "@/shared/components/PopupCards/PopupOverlay.module.scss";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
 
 const UsersListPage = observer(() => {
