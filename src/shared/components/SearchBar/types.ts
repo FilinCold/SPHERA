@@ -19,9 +19,12 @@ export interface SearchBarProps {
   breadcrumbs?: Breadcrumb[];
   totalCount?: number;
   searchPlaceholder?: string;
+  searchAriaLabel?: string;
   onSearch?: (params: SearchParams) => void;
   shopOptions?: Option[];
   organizationOptions?: Option[];
+  shopFilterLabel?: string;
+  organizationFilterLabel?: string;
   buttonText?: string;
   buttonLink?: string;
   hideActionButton?: boolean;

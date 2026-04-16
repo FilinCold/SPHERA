@@ -13,7 +13,7 @@ export type MenuItemConfig = {
 };
 
 export const MENU: readonly MenuItemConfig[] = [
-  { id: "space", href: PAGES.HOME, name: "Пространство", icon: homeIcon },
+  { id: "space", href: PAGES.COMPANY_SPACE, name: "Пространства", icon: homeIcon },
   { id: "users", href: PAGES.USERS, name: "Пользователи", icon: usersIcon },
   { id: "candidates", href: PAGES.CANDIDATES, name: "Кандидаты", icon: usersIcon },
   { id: "courses", href: PAGES.COURSES, name: "Курсы", icon: coursesIcon },

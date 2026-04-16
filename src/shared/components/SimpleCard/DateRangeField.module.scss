@@ -1,0 +1,159 @@
+.dateRangeRoot {
+  position: relative;
+  width: 100%;
+}
+
+.dateRange {
+  align-items: flex-start;
+  display: flex;
+  gap: 6px;
+}
+
+.dateColumn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 184px;
+  min-width: 0;
+}
+
+/* Макет Figma (760:5632): поля даты 184×44, radius 8px, border #D4D3DF */
+.dateInputWrap {
+  flex: 1;
+  max-width: 184px;
+  position: relative;
+}
+
+.dateInput {
+  background: #ffffff;
+  border: 1px solid #d4d3df;
+  border-radius: 8px;
+  color: #232426;
+  font-size: 16px;
+  font-weight: 400;
+  height: 44px;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  padding: 0 44px 0 12px;
+  width: 100%;
+
+  &:focus {
+    border-color: #0b99c1;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #b2b1b7;
+  }
+
+  &.dateInputInvalid {
+    border-color: #d92d20;
+  }
+}
+
+.errorText {
+  color: #d92d20;
+  font-size: 12px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.calendarBtn {
+  align-items: center;
+  background: none;
+  border: none;
+  color: #0b99c1;
+  cursor: pointer;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  margin: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 44px;
+
+  &:focus-visible {
+    border-radius: 8px;
+    outline: 2px solid #0b99c1;
+    outline-offset: 1px;
+  }
+}
+
+.dateDash {
+  color: #b2b1b7;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* Портал в body + fixed — иначе обрезается из-за overflow:hidden у карточки (.card) */
+.popover {
+  background: #ffffff;
+  border: 1px solid #ebeaf5;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  left: 0;
+  margin: 0;
+  max-height: min(420px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  overflow: auto;
+  padding: 12px;
+  position: fixed;
+  top: 0;
+  z-index: 1100;
+}
+
+.dayPicker {
+  --rdp-accent-color: #0b99c1;
+  --rdp-accent-background-color: rgba(11, 153, 193, 0.14);
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-day_button-border-radius: 6px;
+  --rdp-day_button-height: 34px;
+  --rdp-day_button-width: 34px;
+  --rdp-nav-height: 2.5rem;
+}
+
+.inlinePanel {
+  border: 1px solid #d4d3df;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-top: 12px;
+  max-width: 100%;
+  overflow: auto;
+  padding: 8px 8px 12px;
+  width: 100%;
+}
+
+.dayPickerInline {
+  --rdp-accent-color: #0b99c1;
+  --rdp-accent-background-color: rgba(11, 153, 193, 0.18);
+  --rdp-background-color: #ffffff;
+  --rdp-outline: 0;
+  --rdp-weekday-color: #b2b1b7;
+  margin: 0 auto;
+}
+
+.dayPickerInline :global(.rdp-weekday) {
+  color: #b2b1b7;
+  font-size: 12px;
+}
+
+.dayPickerInline :global(.rdp-day_button) {
+  font-size: 12px;
+}
+
+.dayPickerInline :global(.rdp-caption_label) {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dayPickerInline :global(.rdp-nav_button) {
+  color: #0b99c1;
+}
