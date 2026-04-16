@@ -7,6 +7,41 @@ export type AppRole = "superadmin" | "admin" | "user" | "candidate" | "guest";
 /** Роль из сессии/API (до нормализации в AppRole). */
 export type SessionRole = "superadmin" | "admin" | "user" | "candidate" | "unrecognized";
 
+export const normalizeRoleCandidate = (roleCandidate: string): SessionRole => {
+  const normalized = roleCandidate
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+  if (normalized === "superadmin") {
+    return "superadmin";
+  }
+
+  if (
+    normalized === "admin" ||
+    normalized === "companyadmin" ||
+    normalized === "tenantadmin" ||
+    normalized === "companyadministrator"
+  ) {
+    return "admin";
+  }
+
+  if (
+    normalized === "user" ||
+    normalized === "hr" ||
+    normalized === "companyuser" ||
+    normalized === "companyhr"
+  ) {
+    return "user";
+  }
+
+  if (normalized === "candidate") {
+    return "candidate";
+  }
+
+  return "unrecognized";
+};
+
 /**
  * Эффективная роль для меню и RBAC.
  * Неизвестная роль → guest (минимальные права). Подписка обрабатывается отдельно в guard/store.
@@ -33,7 +68,7 @@ export const getAppRoleFromSessionUser = (
  * Меню: админ компании в пространстве (tenant) — операционный доступ.
  * Суперадмин (сотрудник LMS / платформы) — уже в вашей матрице: только «Пространство» и «Пользователи».
  */
-const TENANT_COMPANY_ADMIN_NAV: readonly NavItemId[] = ["space", "users", "candidates", "courses"];
+const TENANT_COMPANY_ADMIN_NAV: readonly NavItemId[] = ["users", "candidates", "courses"];
 
 /** Сотрудник LMS: управление пространствами, подписками и т.п. — без разделов HR-операций в меню. */
 const LMS_PLATFORM_SUPERADMIN_NAV: readonly NavItemId[] = ["space", "users"];
@@ -62,13 +97,13 @@ type RouteRule = {
 
 /** Маршруты: superadmin платформы не ходит в операционные HR-разделы tenant (кандидаты/курсы), как в вашей routeAccess. */
 const ROUTE_RULES: readonly RouteRule[] = [
+  { prefix: PAGES.EDIT_SPACE, roles: ["superadmin"] },
+  { prefix: PAGES.COMPANY_SPACE, roles: ["superadmin"] },
   { prefix: "/statistics", roles: ["superadmin", "admin"] },
   { prefix: "/candidates", roles: ["admin", "user"] },
   { prefix: "/courses", roles: ["admin", "user"] },
   { prefix: "/users", roles: ["superadmin", "admin"] },
   { prefix: "/todos", roles: ["superadmin", "admin", "user"] },
-  { prefix: "/space", exact: true, roles: ["superadmin", "admin"] },
-  { prefix: "/", exact: true, roles: ["superadmin", "admin"] },
 ];
 
 /** Кандидат: только публичный сценарий приложения (без админских разделов). */
@@ -115,6 +150,11 @@ export const getAvailableNav = (role: AppRole): readonly MenuItemConfig[] => {
 
 /** Куда увести пользователя, если текущий URL ему недоступен. */
 export const getFallbackPathForRole = (role: AppRole): string => {
+  /** Платформенный суперадмин: список пространств, не форма создания (`/made-space`). */
+  if (role === "superadmin") {
+    return PAGES.COMPANY_SPACE;
+  }
+
   const nav = getAvailableNav(role);
 
   const first = nav[0];

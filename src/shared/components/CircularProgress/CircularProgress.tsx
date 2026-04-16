@@ -10,7 +10,7 @@ export const CircularProgress = ({
   count,
   color = "#1e90ff",
 }: CircularProgressProps) => {
-  const radius = 26;
+  const radius = 24;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (value / 100) * circumference;
 
