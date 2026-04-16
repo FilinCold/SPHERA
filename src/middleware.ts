@@ -8,6 +8,7 @@ import {
   isPublicRoutePathname,
 } from "@/shared/config/auth-routes.config";
 import { PAGES } from "@/shared/config/pages.config";
+import { getFallbackPathForRole, normalizeRoleCandidate } from "@/shared/config/roles.config";
 
 import type { NextRequest } from "next/server";
 
@@ -17,6 +18,17 @@ const isWorkspaceSuspended = (user: unknown): boolean => {
   }
 
   return Boolean((user as { workspace_suspended?: boolean }).workspace_suspended);
+};
+
+const resolveRootRedirectPath = (user: unknown): string => {
+  if (!user || typeof user !== "object") {
+    return PAGES.LOGIN;
+  }
+
+  const roleCandidate = String((user as { role?: string }).role ?? "");
+  const role = normalizeRoleCandidate(roleCandidate);
+
+  return getFallbackPathForRole(role === "unrecognized" ? "guest" : role);
 };
 
 const forwardSetCookies = (from: Response, to: NextResponse): void => {
@@ -103,6 +115,19 @@ export async function middleware(request: NextRequest) {
     forwardSetCookies(sessionRes, redirect);
 
     return redirect;
+  }
+
+  if (pathname === PAGES.HOME) {
+    const targetPath = resolveRootRedirectPath(data.user);
+
+    if (targetPath !== pathname) {
+      const targetUrl = new URL(targetPath, request.url);
+      const redirect = NextResponse.redirect(targetUrl);
+
+      forwardSetCookies(sessionRes, redirect);
+
+      return redirect;
+    }
   }
 
   const response = NextResponse.next();

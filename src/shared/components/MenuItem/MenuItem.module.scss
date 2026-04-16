@@ -3,8 +3,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
-  font-family: SF Pro;
   font-weight: 400;
   color: black;
   text-decoration: none;
@@ -22,6 +20,7 @@
 .icon {
   width: 24px;
   height: 24px;
+
   @media (max-width: 940px) {
     width: 16px;
     height: 16px;

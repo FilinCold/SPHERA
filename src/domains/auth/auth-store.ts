@@ -5,6 +5,7 @@ import {
   canAccessRoute as rbacCanAccessRoute,
   getAppRoleFromSessionUser,
   getFallbackPathForRole,
+  normalizeRoleCandidate,
 } from "@/shared/config/roles.config";
 import type { RootStore } from "@/shared/store";
 
@@ -168,7 +169,7 @@ export class AuthStore {
 
   private mapUserFromMe(me: AuthMeResponse): AuthUser {
     const roleCandidate = String(me.role ?? "");
-    const role: UserRole = this.normalizeRole(roleCandidate);
+    const role: UserRole = normalizeRoleCandidate(roleCandidate);
 
     const resolvedName = [me.full_name, me.name]
       .map((v) => (typeof v === "string" ? v.trim() : ""))
@@ -181,44 +182,5 @@ export class AuthStore {
       role,
       workspaceSuspended: Boolean(me.workspace_suspended),
     };
-  }
-
-  private normalizeRole(roleCandidate: string): UserRole {
-    const normalized = roleCandidate
-      .trim()
-      .toLowerCase()
-      .replace(/[\s_-]+/g, "");
-
-    if (normalized === "superadmin") {
-      return "superadmin";
-    }
-
-    if (
-      normalized === "admin" ||
-      normalized === "companyadmin" ||
-      normalized === "tenantadmin" ||
-      normalized === "companyadministrator"
-    ) {
-      return "admin";
-    }
-
-    if (
-      normalized === "user" ||
-      normalized === "hr" ||
-      normalized === "companyuser" ||
-      normalized === "companyhr"
-    ) {
-      return "user";
-    }
-
-    if (normalized === "candidate") {
-      return "candidate";
-    }
-
-    if (normalized === "unreg" || normalized === "unrecognized") {
-      return "unrecognized";
-    }
-
-    return "unrecognized";
   }
 }

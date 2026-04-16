@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
+import { Button } from "@/shared/components/Button/Button";
 import {
   DEFAULT_TITLE_BAR_CONFIG,
   TITLE_BAR_CONFIG_BY_ROUTE,
@@ -21,9 +22,12 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
     breadcrumbs,
     totalCount = 0,
     searchPlaceholder,
+    searchAriaLabel,
     onSearch,
     shopOptions = [],
     organizationOptions = [],
+    shopFilterLabel = "Торговая точка",
+    organizationFilterLabel = "Организация",
     buttonText,
     buttonLink,
     hideActionButton,
@@ -38,12 +42,6 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
     const shouldHideActionButton = hideActionButton ?? routeConfig.hideActionButton ?? false;
 
     const handleSearch = () => {
-      if (!store.hasFilters) {
-        alert("Введите данные для поиска");
-
-        return;
-      }
-
       if (onSearch) {
         onSearch(store.searchParams);
       }
@@ -58,9 +56,8 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
           <div className={styles.left}>
             <div className={styles.breadcrumbs}>
               {safeBreadcrumbs.map((b, i) => (
-                <span key={i}>
+                <span className={styles.breadcrumb} key={i}>
                   {b.href ? <Link href={b.href}>{b.label}</Link> : <span>{b.label}</span>}
-                  {i < safeBreadcrumbs.length - 1 && " / "}
                 </span>
               ))}
             </div>
@@ -70,7 +67,17 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
 
           <div className={styles.right}>
             <div className={styles.inputWrapper}>
-              <span className={styles.icon}>
+              <input
+                aria-label={searchAriaLabel ?? "Поиск"}
+                className={styles.input}
+                placeholder={resolvedSearchPlaceholder}
+                value={store.query}
+                onChange={(e) => store.setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+              />
+              <button className={styles.iconButton} type="button" onClick={handleSearch}>
                 <svg
                   width="20"
                   height="20"
@@ -86,16 +93,7 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
                     strokeLinejoin="round"
                   />
                 </svg>
-              </span>
-              <input
-                className={styles.input}
-                placeholder={resolvedSearchPlaceholder}
-                value={store.query}
-                onChange={(e) => store.setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                }}
-              />
+              </button>
             </div>
 
             {!shouldHideActionButton && (
@@ -108,62 +106,70 @@ export const SearchBar: React.FC<SearchBarProps> = observer(
 
         <div className={`${styles.filtersRow} ${!store.filtersVisible ? styles.hidden : ""}`}>
           <div className={styles.select}>
-            <div className={styles.selectButton} onClick={store.toggleShopOpen}>
-              {store.getShopLabel(shopOptions)}
-            </div>
+            <button className={styles.selectButton} type="button" onClick={store.toggleShopOpen}>
+              <span className={styles.selectLabel}>{shopFilterLabel}</span>
+              <span className={styles.selectValue}>{store.getShopLabel(shopOptions)}</span>
+              <span className={styles.selectArrow}>⌄</span>
+            </button>
 
-            {store.shopOpen && (
+            {store.shopOpen && shopOptions.length > 0 && (
               <div className={styles.dropdown}>
                 {shopOptions.map((o) => (
-                  <div
+                  <button
                     key={o.value}
                     className={styles.option}
+                    type="button"
                     onClick={() => {
                       store.setShop(o.value);
                       store.setShopOpen(false);
                     }}
                   >
                     {o.label}
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
           </div>
 
           <div className={styles.select}>
-            <div className={styles.selectButton} onClick={store.toggleOrgOpen}>
-              {store.getOrganizationLabel(organizationOptions)}
-            </div>
+            <button className={styles.selectButton} type="button" onClick={store.toggleOrgOpen}>
+              <span className={styles.selectLabel}>{organizationFilterLabel}</span>
+              <span className={styles.selectValue}>
+                {store.getOrganizationLabel(organizationOptions)}
+              </span>
+              <span className={styles.selectArrow}>⌄</span>
+            </button>
 
-            {store.orgOpen && (
+            {store.orgOpen && organizationOptions.length > 0 && (
               <div className={styles.dropdown}>
                 {organizationOptions.map((o) => (
-                  <div
+                  <button
                     key={o.value}
                     className={styles.option}
+                    type="button"
                     onClick={() => {
                       store.setOrganization(o.value);
                       store.setOrgOpen(false);
                     }}
                   >
                     {o.label}
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
           </div>
 
-          <button className={`${styles.button} ${styles.secondary}`} onClick={handleSearch}>
+          <Button className={`${styles.button} ${styles.secondary}`} onClick={handleSearch}>
             Найти
-          </button>
+          </Button>
         </div>
 
         <div className={styles.bottomRow}>
           <div className={styles.count}>Найдено {totalCount}</div>
 
-          <div className={styles.toggle} onClick={store.toggleFiltersVisible}>
-            {store.filtersVisible ? "Скрыть фильтры" : "Раскрыть фильтры"}
-          </div>
+          <button className={styles.toggle} onClick={store.toggleFiltersVisible} type="button">
+            {store.filtersVisible ? "Скрыть фильтр ⌃" : "Показать фильтр ⌄"}
+          </button>
         </div>
       </div>
     );
