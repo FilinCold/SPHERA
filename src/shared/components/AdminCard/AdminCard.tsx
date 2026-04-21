@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useState } from "react";
+import { startTransition, useRef, useState } from "react";
 
 import styles from "./AdminCard.module.scss";
 
@@ -11,19 +11,40 @@ export const AdminCard = ({
   title,
   fields,
   initialValues,
+  onChange,
   onCancel,
   onSubmit,
   hideFooter = false,
   submitLabel = "Создать",
+  singleColumn = false,
   className,
 }: AdminCardProps) => {
   const [formData, setFormData] = useState<Record<string, string>>(() => ({ ...initialValues }));
+  const formDataRef = useRef<Record<string, string>>({ ...initialValues });
+
+  const parentChangeNotifyScheduled = useRef(false);
 
   const handleChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const next = { ...formDataRef.current, [name]: value };
+
+    formDataRef.current = next;
+    setFormData(next);
+
+    if (!onChange) {
+      return;
+    }
+
+    if (parentChangeNotifyScheduled.current) {
+      return;
+    }
+
+    parentChangeNotifyScheduled.current = true;
+    queueMicrotask(() => {
+      parentChangeNotifyScheduled.current = false;
+      startTransition(() => {
+        onChange(formDataRef.current);
+      });
+    });
   };
 
   const handleCancel = () => {
@@ -44,7 +65,7 @@ export const AdminCard = ({
     <div className={clsx(styles.card, className)}>
       <div className={styles.header}>{title}</div>
 
-      <div className={styles.body}>
+      <div className={clsx(styles.body, singleColumn && styles.bodySingleColumn)}>
         {fields.map((field) => (
           <div key={field.name} className={styles.field}>
             <label>

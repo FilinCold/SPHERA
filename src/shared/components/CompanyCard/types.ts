@@ -7,5 +7,5 @@ export interface CompanyCardProps {
   status?: CompanyStatus;
   href?: string;
   target?: "_blank" | "_self" | "_parent" | "_top";
-  companyId?: string;
+  companySlug?: string;
 }

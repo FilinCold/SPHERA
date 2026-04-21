@@ -68,10 +68,11 @@ export const getAppRoleFromSessionUser = (
  * Меню: админ компании в пространстве (tenant) — операционный доступ.
  * Суперадмин (сотрудник LMS / платформы) — уже в вашей матрице: только «Пространство» и «Пользователи».
  */
-const TENANT_COMPANY_ADMIN_NAV: readonly NavItemId[] = ["users", "candidates", "courses"];
+const TENANT_COMPANY_ADMIN_NAV: readonly NavItemId[] = ["space", "users", "candidates", "courses"];
+const TENANT_COMPANY_USER_NAV: readonly NavItemId[] = ["space", "users", "candidates", "courses"];
 
-/** Сотрудник LMS: управление пространствами, подписками и т.п. — без разделов HR-операций в меню. */
-const LMS_PLATFORM_SUPERADMIN_NAV: readonly NavItemId[] = ["space", "users"];
+/** Сотрудник LMS: управление пространствами, подписками и т.п. — без разделов tenant-операций в меню. */
+const LMS_PLATFORM_SUPERADMIN_NAV: readonly NavItemId[] = ["space"];
 
 /**
  * Доступные пункты навигации по роли (ключи пунктов меню).
@@ -79,7 +80,7 @@ const LMS_PLATFORM_SUPERADMIN_NAV: readonly NavItemId[] = ["space", "users"];
 export const NAV_BY_ROLE: Record<AppRole, readonly NavItemId[]> = {
   superadmin: LMS_PLATFORM_SUPERADMIN_NAV,
   admin: TENANT_COMPANY_ADMIN_NAV,
-  user: ["candidates", "courses"],
+  user: TENANT_COMPANY_USER_NAV,
   candidate: ["courses"],
   guest: [],
 };
@@ -97,12 +98,14 @@ type RouteRule = {
 
 /** Маршруты: superadmin платформы не ходит в операционные HR-разделы tenant (кандидаты/курсы), как в вашей routeAccess. */
 const ROUTE_RULES: readonly RouteRule[] = [
+  { prefix: PAGES.MADE_SPACE, roles: ["superadmin"] },
+  { prefix: PAGES.SPACE, roles: ["admin", "user"] },
   { prefix: PAGES.EDIT_SPACE, roles: ["superadmin"] },
   { prefix: PAGES.COMPANY_SPACE, roles: ["superadmin"] },
-  { prefix: "/statistics", roles: ["superadmin", "admin"] },
+  { prefix: PAGES.STATISTICS, roles: ["superadmin", "admin", "user"] },
   { prefix: "/candidates", roles: ["admin", "user"] },
   { prefix: "/courses", roles: ["admin", "user"] },
-  { prefix: "/users", roles: ["superadmin", "admin"] },
+  { prefix: "/users", roles: ["admin", "user"] },
   { prefix: "/todos", roles: ["superadmin", "admin", "user"] },
 ];
 
@@ -145,7 +148,15 @@ export const canAccessRoute = (role: AppRole, pathname: string): boolean => {
 export const getAvailableNav = (role: AppRole): readonly MenuItemConfig[] => {
   const allowed = NAV_BY_ROLE[role];
 
-  return MENU.filter((item) => allowed.includes(item.id));
+  const available = MENU.filter((item) => allowed.includes(item.id));
+
+  if (role !== "superadmin") {
+    return available;
+  }
+
+  return available.map((item) =>
+    item.id === "space" ? { ...item, href: PAGES.COMPANY_SPACE, name: "Пространства" } : item,
+  );
 };
 
 /** Куда увести пользователя, если текущий URL ему недоступен. */

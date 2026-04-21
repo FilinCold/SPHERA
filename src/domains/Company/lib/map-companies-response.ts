@@ -1,3 +1,5 @@
+import { isoDateOnlyToRuDate } from "./ru-date-to-iso";
+
 import type { CompaniesListResult, CompanyListItem } from "../model/company-model";
 
 /** GET `/api/v1/companies/`: тело — объект, список в `results`. */
@@ -81,6 +83,60 @@ function pickSubscriptionEnd(record: Record<string, unknown>): unknown {
   return undefined;
 }
 
+function pickActiveSubscriptionRange(
+  record: Record<string, unknown>,
+): { start: string; end: string } | null {
+  const raw = record.actual_subscriptions;
+
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return null;
+  }
+
+  for (const item of raw) {
+    if (!item || typeof item !== "object") {
+      continue;
+    }
+
+    const row = item as Record<string, unknown>;
+    const st = row.status;
+
+    if (typeof st !== "string" || st.trim().toUpperCase() !== "ACTIVE") {
+      continue;
+    }
+
+    const sd = row.start_date;
+    const ed = row.end_date;
+
+    if (typeof sd === "string" && sd.trim() && typeof ed === "string" && ed.trim()) {
+      return { start: sd.trim(), end: ed.trim() };
+    }
+  }
+
+  return null;
+}
+
+function rawToRuDateField(value: unknown): string | undefined {
+  if (value === undefined || value === null || value === "") {
+    return undefined;
+  }
+
+  if (typeof value === "string") {
+    const fromIso = isoDateOnlyToRuDate(value);
+
+    if (fromIso) {
+      return fromIso;
+    }
+
+    const f = formatRuDate(value);
+
+    return f === "—" ? undefined : f;
+  }
+
+  const f = formatRuDate(value);
+
+  return f === "—" ? undefined : f;
+}
+
 function pickSubscriptionStart(record: Record<string, unknown>): unknown {
   for (const key of SUBSCRIPTION_START_KEYS) {
     if (key in record && record[key] != null && record[key] !== "") {
@@ -158,15 +214,17 @@ function mapRecord(item: unknown): CompanyListItem | null {
   const fromSpaceCompany = mapStatusFromSpaceCompany(r.space_company);
   const statusSource = r.status ?? r.is_active ?? r.subscription_status ?? r.state;
   const status = fromSpaceCompany ?? mapStatus(statusSource);
-  const startRaw = pickSubscriptionStart(r);
-  const endRaw = pickSubscriptionEnd(r);
-  const subscriptionDate = formatRuDate(endRaw ?? startRaw);
-  const subscriptionDateRangeStart = startRaw !== undefined ? formatRuDate(startRaw) : undefined;
-  const subscriptionDateRangeEnd = endRaw !== undefined ? formatRuDate(endRaw) : undefined;
+  const activeSub = pickActiveSubscriptionRange(r);
+  const startRaw = activeSub?.start ?? pickSubscriptionStart(r);
+  const endRaw = activeSub?.end ?? pickSubscriptionEnd(r);
+  const subscriptionDateRangeStart = rawToRuDateField(startRaw);
+  const subscriptionDateRangeEnd = rawToRuDateField(endRaw);
+  const subscriptionDate = rawToRuDateField(endRaw ?? startRaw) ?? "—";
 
   return {
     id: String(idRaw),
     name: nameRaw.trim(),
+    ...(typeof r.description === "string" ? { description: r.description } : {}),
     subscriptionDate,
     status,
     ...(subscriptionDateRangeStart !== undefined ? { subscriptionDateRangeStart } : {}),

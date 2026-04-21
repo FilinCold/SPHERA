@@ -5,7 +5,11 @@ import type { RootStore } from "@/shared/store/root-store";
 import { COMPANIES_LIST_PAGE_SIZE } from "../config/companies-list.config";
 import { companyRepository } from "../repositories/company-repository";
 
-import type { CompanyInfoModel, CompanyListItem } from "../model/company-model";
+import type {
+  CompanyInfoModel,
+  CompanyListItem,
+  SaveCompanyEditInput,
+} from "../model/company-model";
 
 export class CompanyStore {
   private _companyInfo: CompanyInfoModel | null = null;
@@ -21,6 +25,7 @@ export class CompanyStore {
   private _companyForEdit: CompanyListItem | null = null;
   private _isCompanyForEditLoading = false;
   private _companyForEditError: string | null = null;
+  private _isCompanyForEditSaving = false;
 
   constructor(private readonly root: RootStore) {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -100,6 +105,10 @@ export class CompanyStore {
 
   get companyForEditError() {
     return this._companyForEditError;
+  }
+
+  get isCompanyForEditSaving() {
+    return this._isCompanyForEditSaving;
   }
 
   public async createCompany(name: string): Promise<boolean> {
@@ -265,6 +274,47 @@ export class CompanyStore {
       this._companyForEdit = null;
       this._companyForEditError = null;
       this._isCompanyForEditLoading = false;
+      this._isCompanyForEditSaving = false;
     });
+  }
+
+  public async saveEditSpace(input: SaveCompanyEditInput): Promise<boolean> {
+    const slug = input.slug.trim();
+
+    if (!slug || (!input.companyPatch && !input.subscriptionPost)) {
+      return false;
+    }
+
+    this._isCompanyForEditSaving = true;
+    this._companyForEditError = null;
+
+    try {
+      if (input.companyPatch) {
+        await companyRepository.updateCompany(slug, input.companyPatch);
+      }
+
+      if (input.subscriptionPost) {
+        await companyRepository.createCompanySubscription(slug, input.subscriptionPost);
+      }
+
+      const company = await companyRepository.getCompanyById(slug);
+
+      runInAction(() => {
+        this._companyForEdit = company;
+      });
+
+      return true;
+    } catch (err) {
+      runInAction(() => {
+        this._companyForEditError =
+          err instanceof Error ? err.message : "Не удалось сохранить пространство";
+      });
+
+      return false;
+    } finally {
+      runInAction(() => {
+        this._isCompanyForEditSaving = false;
+      });
+    }
   }
 }

@@ -90,4 +90,15 @@ export class RestProvider {
       body: JSON.stringify(body),
     });
   }
+
+  public patch<TResponse, TBody>(
+    path: string,
+    body: TBody,
+    options: RequestInit = {},
+  ): Promise<TResponse> {
+    return this.request<TResponse>("PATCH", path, {
+      ...options,
+      body: JSON.stringify(body),
+    });
+  }
 }

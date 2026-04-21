@@ -20,8 +20,6 @@ import {
 } from "./dateInputMask";
 import styles from "./DateRangeField.module.scss";
 
-import type { DateRange } from "react-day-picker";
-
 function CalendarGlyph() {
   return (
     <svg aria-hidden="true" focusable="false" height="20" viewBox="0 0 24 24" width="20">
@@ -68,12 +66,13 @@ export function DateRangeField({
   const [open, setOpen] = useState(false);
   const [popoverPos, setPopoverPos] = useState({ left: 0, top: 0 });
   const [errors, setErrors] = useState<{ start?: string; end?: string }>({});
+  /** Какое поле сейчас редактируется через календарь (по фокусу или по кнопке календаря). */
+  const [calendarTarget, setCalendarTarget] = useState<"start" | "end">("start");
 
   const fromDate = parseDateRu(startValue);
   const toDate = parseDateRu(endValue);
 
-  const selected: DateRange | undefined =
-    fromDate === undefined && toDate === undefined ? undefined : { from: fromDate, to: toDate };
+  const selectedSingle = calendarTarget === "start" ? fromDate : toDate;
 
   const subscriptionMin = getSubscriptionMinCalendarDate();
   const subscriptionMax = getSubscriptionMaxCalendarDate();
@@ -82,14 +81,6 @@ export function DateRangeField({
   const close = useCallback(() => {
     setOpen(false);
   }, []);
-
-  const openPopover = useCallback(() => {
-    if (isInline) {
-      return;
-    }
-
-    setOpen(true);
-  }, [isInline]);
 
   const updatePopoverPosition = useCallback(() => {
     const anchor = rootRef.current;
@@ -188,23 +179,61 @@ export function DateRangeField({
     };
   }, [close, isInline, open]);
 
-  const handleSelect = (range: DateRange | undefined) => {
-    if (!range?.from) {
-      onFieldChange(startName, "");
-      onFieldChange(endName, "");
+  const handleCalendarSelect = useCallback(
+    (date: Date | undefined) => {
+      if (!date) {
+        if (calendarTarget === "start") {
+          onFieldChange(startName, "");
+        } else {
+          onFieldChange(endName, "");
+        }
 
-      return;
-    }
+        if (!isInline) {
+          close();
+        }
 
-    onFieldChange(startName, formatDateRu(range.from));
+        return;
+      }
 
-    if (range.to) {
-      onFieldChange(endName, formatDateRu(range.to));
-      close();
-    } else {
-      onFieldChange(endName, "");
-    }
-  };
+      const formatted = formatDateRu(date);
+      const startD = parseDateRu(startValue);
+      const endD = parseDateRu(endValue);
+
+      if (calendarTarget === "start") {
+        if (endD && date > endD) {
+          onFieldChange(startName, formatted);
+          onFieldChange(endName, formatted);
+        } else {
+          onFieldChange(startName, formatted);
+        }
+      } else if (!startD) {
+        onFieldChange(startName, formatted);
+        onFieldChange(endName, formatted);
+      } else if (date < startD) {
+        onFieldChange(startName, formatted);
+        onFieldChange(endName, formatted);
+      } else {
+        onFieldChange(endName, formatted);
+      }
+
+      if (!isInline) {
+        close();
+      }
+    },
+    [calendarTarget, close, endName, endValue, isInline, onFieldChange, startName, startValue],
+  );
+
+  const openPopoverFor = useCallback(
+    (target: "start" | "end") => {
+      if (isInline) {
+        return;
+      }
+
+      setCalendarTarget(target);
+      setOpen(true);
+    },
+    [isInline],
+  );
 
   const clearError = (key: "start" | "end") => {
     setErrors((prev) => {
@@ -285,19 +314,25 @@ export function DateRangeField({
     clearError(key);
   };
 
+  const defaultMonth =
+    calendarTarget === "start"
+      ? (fromDate ?? toDate ?? new Date())
+      : (toDate ?? fromDate ?? new Date());
+
   const picker = (
     <DayPicker
-      captionLayout={isInline ? "label" : "dropdown"}
+      key={calendarTarget}
+      captionLayout="dropdown"
       className={clsx(styles.dayPicker, isInline && styles.dayPickerInline)}
-      defaultMonth={fromDate ?? toDate ?? new Date()}
+      defaultMonth={defaultMonth}
       disabled={[{ before: subscriptionMin }, { after: subscriptionMax }]}
       fromYear={currentYear}
       locale={ru}
-      mode="range"
+      mode="single"
       required={false}
-      selected={selected}
+      selected={selectedSingle}
       toYear={currentYear + 5}
-      onSelect={handleSelect}
+      onSelect={handleCalendarSelect}
     />
   );
 
@@ -325,16 +360,17 @@ export function DateRangeField({
               }}
               onFocus={() => {
                 clearError("start");
+                setCalendarTarget("start");
               }}
             />
             {!isInline ? (
               <button
-                aria-label="Открыть календарь выбора периода"
+                aria-label="Открыть календарь: дата начала"
                 className={styles.calendarBtn}
                 type="button"
                 onClick={(event) => {
                   event.preventDefault();
-                  openPopover();
+                  openPopoverFor("start");
                 }}
               >
                 <CalendarGlyph />
@@ -371,16 +407,17 @@ export function DateRangeField({
               }}
               onFocus={() => {
                 clearError("end");
+                setCalendarTarget("end");
               }}
             />
             {!isInline ? (
               <button
-                aria-label="Открыть календарь выбора периода"
+                aria-label="Открыть календарь: дата окончания"
                 className={styles.calendarBtn}
                 type="button"
                 onClick={(event) => {
                   event.preventDefault();
-                  openPopover();
+                  openPopoverFor("end");
                 }}
               >
                 <CalendarGlyph />
@@ -396,7 +433,15 @@ export function DateRangeField({
       </div>
 
       {isInline ? (
-        <div aria-label="Календарь" className={styles.inlinePanel} role="group">
+        <div
+          aria-label={
+            calendarTarget === "start"
+              ? "Календарь: выбор даты начала периода"
+              : "Календарь: выбор даты окончания периода"
+          }
+          className={styles.inlinePanel}
+          role="group"
+        >
           {picker}
         </div>
       ) : null}
