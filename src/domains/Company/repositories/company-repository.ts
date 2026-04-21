@@ -10,6 +10,8 @@ import type {
   CompanyInfoModel,
   CompanyListItem,
   CreateCompanyResponse,
+  CreateCompanySubscriptionPayload,
+  UpdateCompanyPayload,
 } from "../model/company-model";
 
 export type CompaniesListQuery = {
@@ -53,9 +55,37 @@ export class CompanyRepository {
   }
 
   public async createCompany(name: string): Promise<CreateCompanyResponse> {
-    return restProviderInstance.post<CreateCompanyResponse, { name: string }>("/api/v1/companies", {
-      name,
-    });
+    return restProviderInstance.post<CreateCompanyResponse, { name: string }>(
+      "/api/v1/companies/",
+      {
+        name,
+      },
+    );
+  }
+
+  public async updateCompany(id: string, payload: UpdateCompanyPayload): Promise<CompanyListItem> {
+    const raw = await restProviderInstance.patch<unknown, UpdateCompanyPayload>(
+      `/api/v1/companies/${encodeURIComponent(id)}/`,
+      payload,
+    );
+    const mapped = mapCompanyDetailPayload(raw);
+
+    if (!mapped) {
+      throw new Error("Не удалось разобрать ответ сервера");
+    }
+
+    return mapped;
+  }
+
+  /** POST `/api/v1/companies/{slug}/subscriptions/` */
+  public async createCompanySubscription(
+    slug: string,
+    payload: CreateCompanySubscriptionPayload,
+  ): Promise<unknown> {
+    return restProviderInstance.post<unknown, CreateCompanySubscriptionPayload>(
+      `/api/v1/companies/${encodeURIComponent(slug)}/subscriptions/`,
+      payload,
+    );
   }
 }
 

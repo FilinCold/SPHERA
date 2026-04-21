@@ -8,6 +8,7 @@ export interface CompanyInfoModel {
 export type CompanyListItem = {
   id: string;
   name: string;
+  description?: string;
   /** Уже отформатировано для карточки (например ДД.ММ.ГГГГ). */
   subscriptionDate: string;
   status: "active" | "inactive";
@@ -23,5 +24,22 @@ export type CompaniesListResult = {
   totalCount: number;
 };
 
-/** Ответ POST `/api/v1/companies` — уточняется по контракту бэкенда. */
+/** Ответ POST `/api/v1/companies/` — уточняется по контракту бэкенда. */
 export type CreateCompanyResponse = Record<string, unknown>;
+
+export type UpdateCompanyPayload = {
+  name: string;
+  description: string;
+};
+
+/** POST `/api/v1/companies/{slug}/subscriptions/` — поля уточняются по контракту бэкенда. */
+export type CreateCompanySubscriptionPayload = {
+  start_date: string;
+  end_date: string;
+};
+
+export type SaveCompanyEditInput = {
+  slug: string;
+  companyPatch?: UpdateCompanyPayload;
+  subscriptionPost?: CreateCompanySubscriptionPayload;
+};

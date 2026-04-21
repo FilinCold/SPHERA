@@ -13,12 +13,20 @@ import type { NextRequest } from "next/server";
 
 const BLOCKED_PREFIX = "/api/v1/auth/token";
 
-const buildUpstreamPath = (segments: string[] | undefined): string | null => {
-  if (!segments?.length) {
+const buildUpstreamPath = (pathname: string): string | null => {
+  const PROXY_PREFIX = "/api/proxy";
+
+  if (!pathname.startsWith(PROXY_PREFIX)) {
     return null;
   }
 
-  const joined = `/${segments.join("/")}`;
+  // Keep the original trailing slash from client URL to avoid Django redirect
+  // from `/resource` -> `/resource/`, which may break POST semantics.
+  const joined = pathname.slice(PROXY_PREFIX.length);
+
+  if (!joined) {
+    return null;
+  }
 
   if (joined.includes("..")) {
     return null;
@@ -88,8 +96,9 @@ const buildClientResponse = async (
 };
 
 async function handle(req: NextRequest, context: { params: Promise<{ path?: string[] }> }) {
-  const { path: segments } = await context.params;
-  const upstreamPath = buildUpstreamPath(segments);
+  await context.params;
+  const incomingUrl = new URL(req.url);
+  const upstreamPath = buildUpstreamPath(incomingUrl.pathname);
 
   if (!upstreamPath) {
     return NextResponse.json({ message: "Not found" }, { status: 404 });

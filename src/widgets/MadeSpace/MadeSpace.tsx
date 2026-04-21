@@ -42,32 +42,31 @@ const MadeSpaceComponent = () => {
           fields={[
             {
               name: "name",
-              label: "Имя пространства*",
-              placeholder: "Введите имя",
+              label: "Название *",
+              placeholder: "Введите название пространства",
               required: true,
             },
-            // Пока не используем: POST /api/v1/companies принимает только `name`; handoff в edit-space отключён.
-            // {
-            //   name: "fio",
-            //   label: "ФИО*",
-            //   placeholder: "Введите ФИО",
-            //   required: true,
-            // },
-            // {
-            //   name: "email",
-            //   label: "Email администратора*",
-            //   type: "email",
-            //   placeholder: "Введите email",
-            //   required: true,
-            // },
-            // {
-            //   name: "subscriptionDateRange",
-            //   label: "Дата подписки*",
-            //   type: "dateRange",
-            //   placeholder: "__.__.____",
-            //   required: true,
-            // },
+            {
+              name: "adminFullName",
+              label: "ФИО администратора *",
+              placeholder: "Введите фамилию имя отчество",
+              required: true,
+            },
+            {
+              name: "adminEmail",
+              label: "Email администратора *",
+              type: "email",
+              placeholder: "Введите почту",
+              required: true,
+            },
+            {
+              name: "subscriptionDate",
+              label: "Дата подписки",
+              type: "dateRange",
+              placeholder: "__.__.____",
+            },
           ]}
+          submitLabel="Сохранить"
           submitDisabled={companyStore.isCreating}
           onCancel={() => {
             router.push(PAGES.COMPANY_SPACE);

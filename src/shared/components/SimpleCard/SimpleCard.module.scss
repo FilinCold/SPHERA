@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  width: 432px;
+  width: 100%;
 }
 
 /* Вложенная карточка в общей форме: инлайн-календарь не обрезается по вертикали. */
@@ -19,21 +19,26 @@
   font-size: 20px;
   font-weight: 500;
   line-height: 1.3;
-  padding: 20px 18px;
+  padding: 16px 18px;
+  border-radius: 16px 16px 0 0;
+}
+
+.headerCentered {
+  text-align: center;
 }
 
 .body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px 24px 16px;
+  gap: 14px;
+  padding: 16px 24px 24px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 
   label {
     color: #232426;
