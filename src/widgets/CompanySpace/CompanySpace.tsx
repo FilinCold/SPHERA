@@ -50,14 +50,14 @@ const CompanySpaceComponent = () => {
   return (
     <main className={styles.page}>
       <SearchBar
-        breadcrumbs={[{ label: "Пространство" }]}
+        breadcrumbs={[{ label: "Пространства" }]}
         buttonText="Добавить пространство"
-        buttonLink="/made-space"
+        buttonLink={PAGES.MADE_SPACE}
         searchPlaceholder="Поиск по пространствам"
         searchAriaLabel="Поиск по пространствам"
         shopFilterLabel="Торговая точка"
         organizationFilterLabel="Организация"
-        title="Пространство"
+        title="Пространства"
         totalCount={companiesTotalCount}
       />
 
@@ -75,7 +75,7 @@ const CompanySpaceComponent = () => {
                 <CompanyCard
                   key={company.id}
                   href={PAGES.EDIT_SPACE}
-                  companyId={company.id}
+                  companySlug={company.id}
                   name={company.name}
                   subscriptionDate={company.subscriptionDate}
                   status={company.status}

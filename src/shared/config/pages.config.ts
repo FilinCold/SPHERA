@@ -1,8 +1,11 @@
 export const PAGES = {
   HOME: "/",
+  SPACE: "/space",
   COMPANY_SPACE: "/company-space",
+  MADE_SPACE: "/made-space",
   USERS: "/users",
   EDIT_SPACE: "/edit-space",
+  STATISTICS: "/statistics",
   CANDIDATES: "/candidates",
   COURSES: "/courses",
   LOGIN: "/login",
