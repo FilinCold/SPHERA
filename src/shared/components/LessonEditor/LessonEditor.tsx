@@ -83,7 +83,7 @@ export function LessonEditor(props: LessonEditorProps) {
   }, [value]);
 
   return (
-    <div style={{ maxWidth: 800 }}>
+    <div style={{ maxWidth: 3000 }}>
       <div ref={editorRef}></div>
     </div>
   );

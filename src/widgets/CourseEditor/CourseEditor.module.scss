@@ -1,0 +1,202 @@
+.page {
+  padding: 24px;
+  background: #f5f6f8;
+  min-height: 100vh;
+}
+
+.header {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.cover {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.title {
+  margin-top: 16px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 510px;
+  gap: 32px;
+}
+
+.left {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.viewer {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.viewer video {
+  width: 100%;
+  display: block;
+}
+
+.editor {
+  margin-top: 12px;
+}
+
+.saveButton {
+  width: 185px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 2px solid #0b99c1;
+  border-radius: 10px;
+  color: #0b99c1;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.saveButton:hover {
+  background: #087fa0;
+  color: white;
+}
+
+.publishButton {
+  width: 185px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 2px solid #0b99c1;
+  background: #0b99c1;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.publishButton:hover {
+  background: white;
+  color: #087fa0;
+}
+
+.right {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: fit-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.lessonItem {
+  width: 460px;
+  height: 77px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #0b99c11f;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.lessonItem:hover {
+  background: #e7f6fa;
+}
+
+.active {
+  background: #0b99c199;
+  color: black;
+}
+
+.lessonTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #4dcd883d;
+  color: #4dcd88;
+  margin-bottom: 4px;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 16px;
+  transition: 0.2s ease;
+}
+
+.deleteBtn:hover {
+  color: #ff4d4f;
+}
+
+.createButton {
+  width: 190px;
+  height: 50px;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #0b99c1;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+  align-self: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.createButton:hover {
+  background: #087fa0;
+}
+
+.uploadProgress {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.error {
+  margin-top: 10px;
+  color: #ff4d4f;
+  font-size: 12px;
+}
+
+.lessonContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lessonInput {
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  outline: none;
+  background: transparent;
+  border-bottom: 1px solid #0b99c1;
+  padding: 2px 0;
+}
