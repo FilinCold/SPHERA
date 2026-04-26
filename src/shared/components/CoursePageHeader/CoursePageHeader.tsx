@@ -9,12 +9,39 @@ export const CoursePageHeader = (props: CoursePageHeaderProps) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.courseSteps}>
-        <h2>Курсы</h2>
-        <h2>{courseName}</h2>
-        <h2>{lessonStage}</h2>
-      </div>
-      <h1 className={styles.courseNameBig}>{courseName}</h1>
+      <button
+        type="button"
+        className={styles.link}
+        onClick={() => {
+          console.log("go to /courses");
+        }}
+      >
+        Курсы
+      </button>
+
+      <span className={styles.separator}>|</span>
+
+      <button
+        type="button"
+        className={styles.link}
+        onClick={() => {
+          console.log("go to /course");
+        }}
+      >
+        {courseName}
+      </button>
+
+      <span className={styles.separator}>|</span>
+
+      <button
+        type="button"
+        className={`${styles.link} ${styles.current}`}
+        onClick={() => {
+          console.log("go to current lesson");
+        }}
+      >
+        {lessonStage}
+      </button>
     </div>
   );
 };

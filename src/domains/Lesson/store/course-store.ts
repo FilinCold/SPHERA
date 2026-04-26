@@ -57,7 +57,14 @@ export class CourseStore {
     try {
       const data = JSON.parse(raw);
 
-      this._lessons = data.lessons || [];
+      this._lessons = (data.lessons || []).map((lesson: Partial<Lesson>) => ({
+        id: lesson.id ?? Date.now().toString(),
+        title: lesson.title ?? "Новый урок",
+        content: lesson.content ?? "",
+        videoUrl: lesson.videoUrl ?? null,
+        status: lesson.status === "active" ? "active" : "archived",
+      }));
+
       this._selectedLessonId = data.selectedLessonId || null;
 
       const selected = this.selectedLesson;
@@ -93,6 +100,7 @@ export class CourseStore {
       title: "Новый урок",
       content: "",
       videoUrl: null,
+      status: "archived",
     };
 
     this._lessons.push(newLesson);
@@ -101,6 +109,10 @@ export class CourseStore {
 
   public deleteLesson(id: string) {
     this._lessons = this._lessons.filter((l) => l.id !== id);
+
+    if (this._editingLessonId === id) {
+      this._editingLessonId = null;
+    }
 
     if (this._selectedLessonId === id) {
       const next = this._lessons[0];
@@ -129,7 +141,13 @@ export class CourseStore {
 
     if (!lesson) return;
 
-    lesson.title = title;
+    const nextTitle = title.trim() || "Новый урок";
+
+    lesson.title = nextTitle;
+
+    if (this._selectedLessonId === id) {
+      this._title = nextTitle;
+    }
   }
 
   public startEditingLesson(id: string) {
@@ -146,11 +164,44 @@ export class CourseStore {
     this._isLoading = true;
 
     try {
+      const currentLesson = this.selectedLesson;
+
       const lesson: Lesson = {
         id: this._selectedLessonId,
         title: this._title,
         content: this._content,
         videoUrl: this._videoUrl,
+        status: currentLesson?.status ?? "archived",
+      };
+
+      const updated = await courseRepository.saveLesson(lesson);
+
+      runInAction(() => {
+        const index = this._lessons.findIndex((l) => l.id === this._selectedLessonId);
+
+        if (index !== -1) {
+          this._lessons[index] = updated;
+        }
+      });
+    } finally {
+      runInAction(() => {
+        this._isLoading = false;
+      });
+    }
+  }
+
+  public async publishLesson() {
+    if (!this._selectedLessonId) return;
+
+    this._isLoading = true;
+
+    try {
+      const lesson: Lesson = {
+        id: this._selectedLessonId,
+        title: this._title,
+        content: this._content,
+        videoUrl: this._videoUrl,
+        status: "active",
       };
 
       const updated = await courseRepository.saveLesson(lesson);
@@ -175,6 +226,11 @@ export class CourseStore {
     this._error = null;
   }
 
+  public cancelUpload() {
+    this._isUploading = false;
+    this._uploadProgress = 0;
+  }
+
   public setUploadProgress(progress: number) {
     this._uploadProgress = progress;
   }
@@ -188,6 +244,10 @@ export class CourseStore {
   public setError(error: string) {
     this._error = error;
     this._isUploading = false;
+  }
+
+  public getLessonStatusLabel(status: "active" | "archived") {
+    return status === "active" ? "Активен" : "Архив";
   }
 
   get lessons() {

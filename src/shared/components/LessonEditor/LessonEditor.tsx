@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import styles from "./LessonEditor.module.scss";
+
 import type { LessonEditorProps } from "./type";
 import type QuillType from "quill";
 import "quill/dist/quill.snow.css";
@@ -83,8 +85,8 @@ export function LessonEditor(props: LessonEditorProps) {
   }, [value]);
 
   return (
-    <div style={{ maxWidth: 3000 }}>
-      <div ref={editorRef}></div>
+    <div className={styles.editorShell}>
+      <div ref={editorRef} className={styles.editor} />
     </div>
   );
 }

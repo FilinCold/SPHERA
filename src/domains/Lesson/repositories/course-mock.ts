@@ -10,12 +10,14 @@ export const mockCourse: Course = {
       title: "Введение",
       content: "<h1>Введение</h1><p>Первый урок</p>",
       videoUrl: null,
+      status: "active",
     },
     {
       id: "2",
       title: "Работа с возражениями",
       content: "<h1>Работа с возражениями</h1>",
       videoUrl: null,
+      status: "archived",
     },
   ],
 };
