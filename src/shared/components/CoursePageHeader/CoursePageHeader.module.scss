@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #0b99c1;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #0b99c1;
+}
+
+.current {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.separator {
+  color: #9ca3af;
+  font-size: 14px;
+  line-height: 20px;
+}

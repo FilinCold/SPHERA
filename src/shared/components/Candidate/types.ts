@@ -5,6 +5,6 @@ export interface CandidateProps {
   dateOfResponse: string;
   isBookmarked?: boolean;
   progress: number;
-  onToggleBookmark: () => void;
+  onToggleBookmark: (e: React.MouseEvent<HTMLButtonElement>) => void;
   courseInProgress: string;
 }
