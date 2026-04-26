@@ -27,6 +27,7 @@ export type InputField = {
 
 export interface SimpleCardProps {
   title: string;
+  headerAlign?: "left" | "center";
   fields: InputField[];
   /** Начальные значения полей (например после перехода с made-space). */
   initialValues?: Partial<FormData>;

@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { startTransition, useMemo, useRef, useState } from "react";
 
 import { SimpleCardButton } from "../SimpleCardButton/SimpleCardButton";
 
@@ -58,6 +58,7 @@ function areRequiredFieldsSatisfied(fields: InputField[], data: FormData): boole
 
 export const SimpleCard = ({
   title,
+  headerAlign = "left",
   fields,
   initialValues,
   onCancel,
@@ -70,6 +71,9 @@ export const SimpleCard = ({
   className,
 }: SimpleCardProps) => {
   const [formData, setFormData] = useState<FormData>(() => ({ ...initialValues }));
+  const formDataRef = useRef<FormData>({ ...initialValues });
+
+  const parentChangeNotifyScheduled = useRef(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const requiredFilled = useMemo(
@@ -93,17 +97,30 @@ export const SimpleCard = ({
   };
 
   const handleChange = (name: string, value: FormData[string]) => {
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
-
-      onChange?.(newData);
-
-      return newData;
-    });
-
     if (typeof value === "string" && value.trim()) {
       clearFieldError(name);
     }
+
+    const newData = { ...formDataRef.current, [name]: value };
+
+    formDataRef.current = newData;
+    setFormData(newData);
+
+    if (!onChange) {
+      return;
+    }
+
+    if (parentChangeNotifyScheduled.current) {
+      return;
+    }
+
+    parentChangeNotifyScheduled.current = true;
+    queueMicrotask(() => {
+      parentChangeNotifyScheduled.current = false;
+      startTransition(() => {
+        onChange(formDataRef.current);
+      });
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -285,7 +302,9 @@ export const SimpleCard = ({
   const rootClass = clsx(styles.card, embedded && styles.cardEmbedded, className);
   const body = (
     <>
-      <div className={styles.header}>{title}</div>
+      <div className={clsx(styles.header, headerAlign === "center" && styles.headerCentered)}>
+        {title}
+      </div>
 
       <div className={styles.body}>
         {fields.map((field) => (

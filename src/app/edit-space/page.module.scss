@@ -25,27 +25,28 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin: 0 auto;
-  max-width: 1360px;
-  padding: 32px 40px 24px;
+  margin: 0;
+  max-width: none;
+  padding: 24px 16px;
   width: 100%;
 }
 
-/* 432 + 32 + 896 = 1360. Правая колонка — flex: карточка + кнопки сразу под ней (Figma 763:5636, зазор 24px). */
 .grid {
   align-items: start;
   box-sizing: border-box;
   column-gap: 32px;
   display: grid;
-  grid-template-columns: 432px minmax(0, 896px);
-  justify-content: center;
+  grid-template-columns: calc((100% - 32px) / 2) calc((100% - 32px) / 2);
+  justify-content: stretch;
   width: 100%;
 }
 
 .requestCard {
   grid-column: 1;
   grid-row: 1;
-  width: 432px;
+  height: 362px;
+  max-width: none;
+  width: 100%;
 }
 
 .adminColumn {
@@ -56,12 +57,17 @@
   grid-column: 2;
   grid-row: 1;
   justify-self: stretch;
-  max-width: 896px;
+  max-width: none;
   min-width: 0;
   width: 100%;
+  height: 100%;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 1.2px 6px;
+  background: rgb(255, 255, 255);
+  border-radius: 16px;
 }
 
 .adminCard {
+  height: 362px;
   min-width: 0;
   width: 100%;
 }
@@ -71,7 +77,7 @@
   display: flex;
   flex-shrink: 0;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   justify-content: flex-end;
   width: 100%;
 }
@@ -149,13 +155,13 @@
 
 @media (max-width: 1200px) {
   .grid {
-    grid-template-columns: minmax(0, 432px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
 @media (max-width: 900px) {
   .form {
-    padding: 24px 16px 16px;
+    padding: 20px 16px 16px;
   }
 
   .grid {
