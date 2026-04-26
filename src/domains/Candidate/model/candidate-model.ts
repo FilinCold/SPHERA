@@ -1,3 +1,18 @@
+export type Comment = {
+  id: string;
+  author: string;
+  text: string;
+};
+
+export type CandidateDetails = {
+  birthDate: string;
+  education: string;
+  experience: string;
+  skills: string;
+  personal: string;
+  comments: Comment[];
+};
+
 export type Candidate = {
   id: string;
   name: string;
@@ -7,6 +22,8 @@ export type Candidate = {
   dateOfResponse: string;
   isBookmarked: boolean;
   courseInProgress: string;
+  age: number;
+  details?: CandidateDetails;
 };
 
 export type CandidateResponse = {
