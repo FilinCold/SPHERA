@@ -6,7 +6,7 @@ type CourseListItem = CourseCardProps & { id: string };
 
 const courses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
   id: `course-${index + 1}`,
-  title: "Работа с возражениями",
+  title: "Супер курс",
   description: "Lorem ipsum dolor sit amet...",
   image: "https://picsum.photos/403/300",
   status: "active" as const,

@@ -50,7 +50,7 @@ export const CourseCard = observer(
     return (
       <div className={styles.card}>
         <div className={styles.imageWrapper}>
-          <Image src={image} alt={title} className={styles.image} />
+          <Image src={image} alt={title} className={styles.image} width={100} height={100} />
           <div
             className={`${styles.status} ${
               status === "active"
@@ -73,7 +73,14 @@ export const CourseCard = observer(
             <div className={styles.usersRow}>
               <div className={styles.avatars}>
                 {store.avatars.slice(0, 3).map((user) => (
-                  <Image key={user.id} src={user.avatar} alt="user" className={styles.avatar} />
+                  <Image
+                    key={user.id}
+                    src={user.avatar}
+                    alt="user"
+                    className={styles.avatar}
+                    width={100}
+                    height={100}
+                  />
                 ))}
               </div>
 
