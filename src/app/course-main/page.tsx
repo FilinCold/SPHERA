@@ -1,8 +1,23 @@
 import { CourseCard } from "@/shared/components/CourseCard/CourseCard";
+import style from "@/shared/components/CourseCard/CourseCard.module.scss";
 import type { CourseCardProps } from "@/shared/components/CourseCard/types";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
 
 type CourseListItem = CourseCardProps & { id: string };
+const mockUsers = [
+  {
+    id: 1,
+    avatar: "https://i.pravatar.cc/150?img=1",
+  },
+  {
+    id: 2,
+    avatar: "https://i.pravatar.cc/150?img=2",
+  },
+  {
+    id: 3,
+    avatar: "https://i.pravatar.cc/150?img=3",
+  },
+];
 
 const courses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
   id: `course-${index + 1}`,
@@ -13,7 +28,7 @@ const courses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
   usersCount: 89,
   date: "20.02.2026",
   link: "#",
-  users: [],
+  users: mockUsers,
 }));
 
 /*
@@ -36,9 +51,11 @@ export default function CourseMainPage() {
   return (
     <>
       <TitleBar />
-      {courses.map(({ id, ...course }) => (
-        <CourseCard key={id} {...course} />
-      ))}
+      <div className={style.list}>
+        {courses.map(({ id, ...course }) => (
+          <CourseCard key={id} {...course} />
+        ))}
+      </div>
     </>
   );
 }

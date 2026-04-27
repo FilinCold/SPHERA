@@ -4,7 +4,6 @@ import type { User } from "./types";
 
 const USERS_STORAGE_KEY = "users-list-store";
 
-//надо потом решить что делать со всеми Моками в проекте
 const createMockUsers = (): User[] =>
   Array.from({ length: 8 }).map((_, i) => ({
     id: i + 1,

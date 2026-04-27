@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { SimpleCard } from "@/shared/components/SimpleCard/SimpleCard";
 import type { FormData } from "@/shared/components/SimpleCard/types";
+import TitleBar from "@/shared/components/TitleBar/TitleBar";
 
 export default function EditDataPage() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function EditDataPage() {
 
   return (
     <>
-      <SearchBar />
+      <TitleBar />
       <SimpleCard
         title="Данные заявки"
         fields={[
