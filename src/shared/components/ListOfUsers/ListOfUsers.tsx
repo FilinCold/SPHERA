@@ -33,7 +33,7 @@ export const ListOfUsers = observer(({ store: externalStore }: ListOfUsersProps)
   };
 
   const handleEdit = (id: number) => {
-    console.log("Редактировать пользователя:", id);
+    console.error("Редактировать пользователя:", id);
   };
 
   return (
