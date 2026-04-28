@@ -5,9 +5,7 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 93px);
-  height: calc(100dvh - 93px);
   max-height: calc(100vh - 93px);
-  max-height: calc(100dvh - 93px);
   overflow: hidden;
 }
 
@@ -44,7 +42,6 @@
 .requestCard {
   grid-column: 1;
   grid-row: 1;
-  height: 362px;
   max-width: none;
   width: 100%;
 }
@@ -66,7 +63,6 @@
 }
 
 .adminCard {
-  height: 362px;
   min-width: 0;
   width: 100%;
 }
@@ -152,12 +148,6 @@
   margin: 0 auto;
   max-width: 960px;
   padding: 24px;
-}
-
-@media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 900px) {

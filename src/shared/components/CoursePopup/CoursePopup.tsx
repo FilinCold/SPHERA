@@ -89,67 +89,19 @@ export const CoursePopup = ({ onCancel, onSave }: CoursePopupProps) => {
             />
             <label className={styles.uploadIcon}>
               <svg
-                width="52"
-                height="52"
-                viewBox="0 0 52 52"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <g filter="url(#filter0_d_2002_21672)">
-                  <rect
-                    x="6.5"
-                    y="5.2998"
-                    width="39"
-                    height="39"
-                    rx="7.5"
-                    stroke="#0B99C1"
-                    shapeRendering="crispEdges"
-                  />
-                  <path
-                    d="M25.043 16.8H18.043C17.5125 16.8 17.0038 17.0107 16.6288 17.3858C16.2537 17.7609 16.043 18.2696 16.043 18.8V32.8C16.043 33.3305 16.2537 33.8392 16.6288 34.2142C17.0038 34.5893 17.5125 34.8 18.043 34.8H32.043C32.5734 34.8 33.0821 34.5893 33.4572 34.2142C33.8323 33.8392 34.043 33.3305 34.043 32.8V25.8M32.543 15.3C32.9408 14.9022 33.4804 14.6787 34.043 14.6787C34.6056 14.6787 35.1451 14.9022 35.543 15.3C35.9408 15.6979 36.1643 16.2374 36.1643 16.8C36.1643 17.3626 35.9408 17.9022 35.543 18.3L26.043 27.8L22.043 28.8L23.043 24.8L32.543 15.3Z"
-                    stroke="#181D27"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-                <defs>
-                  <filter
-                    id="filter0_d_2002_21672"
-                    x="0"
-                    y="-0.000195265"
-                    width="52"
-                    height="52"
-                    filterUnits="userSpaceOnUse"
-                    colorInterpolation-filters="sRGB"
-                  >
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                    <feColorMatrix
-                      in="SourceAlpha"
-                      type="matrix"
-                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                      result="hardAlpha"
-                    />
-                    <feOffset dy="1.2" />
-                    <feGaussianBlur stdDeviation="3" />
-                    <feComposite in2="hardAlpha" operator="out" />
-                    <feColorMatrix
-                      type="matrix"
-                      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-                    />
-                    <feBlend
-                      mode="normal"
-                      in2="BackgroundImageFix"
-                      result="effect1_dropShadow_2002_21672"
-                    />
-                    <feBlend
-                      mode="normal"
-                      in="SourceGraphic"
-                      in2="effect1_dropShadow_2002_21672"
-                      result="shape"
-                    />
-                  </filter>
-                </defs>
+                <path
+                  d="M19 13V17C19 17.5304 18.7893 18.0391 18.4142 18.4142C18.0391 18.7893 17.5304 19 17 19H3C2.46957 19 1.96086 18.7893 1.58579 18.4142C1.21071 18.0391 1 17.5304 1 17V13M15 6L10 1M10 1L5 6M10 1V13"
+                  stroke="#181D27"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
 
               <input
@@ -163,7 +115,13 @@ export const CoursePopup = ({ onCancel, onSave }: CoursePopupProps) => {
           <div className={styles.helperText}>Оптимальные размеры 3200 x 410px</div>
           {imagePreview && (
             <div className={styles.imagePreview}>
-              <Image src={imagePreview} alt="Preview" className={styles.previewImage} />
+              <Image
+                src={imagePreview}
+                alt="Preview"
+                className={styles.previewImage}
+                width={316}
+                height={128}
+              />
             </div>
           )}
         </div>
