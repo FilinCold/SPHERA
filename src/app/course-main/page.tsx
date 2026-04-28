@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { CourseCard } from "@/shared/components/CourseCard/CourseCard";
 import style from "@/shared/components/CourseCard/CourseCard.module.scss";
@@ -12,45 +12,85 @@ import TitleBar from "@/shared/components/TitleBar/TitleBar";
 type CourseListItem = CourseCardProps & { id: string };
 
 const mockUsers = [
+  { id: 1, avatar: "https://i.pravatar.cc/150?img=1" },
+  { id: 2, avatar: "https://i.pravatar.cc/150?img=2" },
+  { id: 3, avatar: "https://i.pravatar.cc/150?img=3" },
+];
+
+const getInitialCourses = (): CourseListItem[] => [
   {
-    id: 1,
-    avatar: "https://i.pravatar.cc/150?img=1",
+    id: "course-1",
+    title: "React с нуля до профи",
+    description: "Полный курс по React: хуки, контекст, роутинг, оптимизация",
+    image: "https://picsum.photos/id/0/403/300",
+    status: "active",
+    usersCount: 156,
+    date: "15.03.2026",
+    link: "https://example.com/react-course",
+    users: mockUsers,
   },
   {
-    id: 2,
-    avatar: "https://i.pravatar.cc/150?img=2",
+    id: "course-2",
+    title: "TypeScript: полное руководство",
+    description: "Освойте TypeScript с нуля: типы, дженерики, утилитарные типы",
+    image: "https://picsum.photos/id/1/403/300",
+    status: "active",
+    usersCount: 98,
+    date: "22.03.2026",
+    link: "https://example.com/typescript-course",
+    users: mockUsers,
   },
   {
-    id: 3,
-    avatar: "https://i.pravatar.cc/150?img=3",
+    id: "course-3",
+    title: "Next.js для профессионалов",
+    description: "Создание серверных приложений, SSR, ISR, API Routes",
+    image: "https://picsum.photos/id/2/403/300",
+    status: "archived",
+    usersCount: 243,
+    date: "10.02.2026",
+    link: "https://example.com/nextjs-course",
+    users: mockUsers,
+  },
+  {
+    id: "course-4",
+    title: "MobX в действии",
+    description: "Управление состоянием в React-приложениях с помощью MobX",
+    image: "https://picsum.photos/id/3/403/300",
+    status: "deleted",
+    usersCount: 45,
+    date: "05.01.2026",
+    link: "https://example.com/mobx-course",
+    users: mockUsers,
   },
 ];
 
-const initialCourses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
-  id: `course-${index + 1}`,
-  title: "Супер курс",
-  description: "Lorem ipsum dolor sit amet...",
-  image: "https://picsum.photos/403/300",
-  status: "active" as const,
-  usersCount: 89,
-  date: "20.02.2026",
-  link: "#",
-  users: mockUsers,
-}));
+const loadCourses = (): CourseListItem[] => {
+  if (typeof window === "undefined") return getInitialCourses();
+
+  const saved = localStorage.getItem("courses");
+
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch (error) {
+      console.error("Failed to parse courses:", error);
+    }
+  }
+
+  return getInitialCourses();
+};
 
 export default function CourseMainPage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [courses, setCourses] = useState<CourseListItem[]>(() => {
-    if (typeof window !== "undefined") {
-      const savedCourses = localStorage.getItem("courses");
+  const [courses, setCourses] = useState<CourseListItem[]>(loadCourses);
 
-      if (savedCourses) {
-        return JSON.parse(savedCourses);
-      }
-    }
-
-    return initialCourses;
-  });
+  useEffect(() => {
+    localStorage.setItem("courses", JSON.stringify(courses));
+  }, [courses]);
 
   const handleCreateCourse = () => {
     setIsPopupOpen(true);
@@ -62,17 +102,14 @@ export default function CourseMainPage() {
       title: courseData.title,
       description: courseData.description,
       image: courseData.coverImage || "https://picsum.photos/403/300",
-      status: "active" as const,
+      status: "active",
       usersCount: 0,
       date: new Date().toLocaleDateString("ru-RU"),
       link: "#",
       users: [],
     };
 
-    const updatedCourses = [newCourse, ...courses];
-
-    setCourses(updatedCourses);
-    localStorage.setItem("courses", JSON.stringify(updatedCourses));
+    setCourses([newCourse, ...courses]);
   };
 
   const handleClosePopup = () => {
@@ -83,8 +120,18 @@ export default function CourseMainPage() {
     <>
       <TitleBar onCreateClick={handleCreateCourse} />
       <div className={style.list}>
-        {courses.map(({ id, ...course }) => (
-          <CourseCard key={id} {...course} />
+        {courses.map((course) => (
+          <CourseCard
+            key={course.id}
+            title={course.title}
+            description={course.description}
+            image={course.image}
+            status={course.status}
+            usersCount={course.usersCount}
+            date={course.date}
+            link={course.link}
+            users={course.users ?? []}
+          />
         ))}
       </div>
 
