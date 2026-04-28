@@ -50,37 +50,9 @@ export class ListOfUsersStore {
     this.saveUsers();
   }
 
-  /*
-  // Пример реального API вместо localStorage/mock
-  async fetchUsersFromApi() {
-    try {
-      const response = await fetch("/api/users", { method: "GET" });
-      if (!response.ok) throw new Error("Не удалось загрузить пользователей");
-      const data = (await response.json()) as User[];
-      this.users = data;
-      this.nextId = data.length ? Math.max(...data.map((user) => user.id)) + 1 : 1;
-    } catch (error) {
-      console.error(error);
-    }
+  updateUser() {
+    this.saveUsers();
   }
-
-  async createUserOnApi(payload: { fullName: string; email: string; role: string }) {
-    const response = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) throw new Error("Не удалось создать пользователя");
-    const createdUser = (await response.json()) as User;
-    this.users = [createdUser, ...this.users];
-  }
-
-  async deleteUserOnApi(id: number) {
-    const response = await fetch(`/api/users/${id}`, { method: "DELETE" });
-    if (!response.ok) throw new Error("Не удалось удалить пользователя");
-    this.users = this.users.filter((user) => user.id !== id);
-  }
-  */
 
   private loadUsers(): User[] {
     if (typeof window === "undefined") {
@@ -96,7 +68,7 @@ export class ListOfUsersStore {
 
       return fallbackUsers;
     }
-    // TODO: при подключении API заменить загрузку из localStorage на fetchUsersFromApi()
+
     try {
       const parsed = JSON.parse(raw) as User[];
 
@@ -122,7 +94,6 @@ export class ListOfUsersStore {
     if (typeof window === "undefined") {
       return;
     }
-
     window.localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(this.users));
   }
 }

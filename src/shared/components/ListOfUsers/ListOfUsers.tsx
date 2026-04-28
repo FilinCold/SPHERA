@@ -7,11 +7,14 @@ import styles from "./ListOfUsers.module.scss";
 import { ListOfUsersStore } from "./ListOfUsers.store";
 import ListOfUsersDeletePopup from "./ListOfUsersDeletePopup";
 
+import type { User } from "./types";
+
 type ListOfUsersProps = {
   store?: ListOfUsersStore;
+  onEdit?: (user: User) => void;
 };
 
-export const ListOfUsers = observer(({ store: externalStore }: ListOfUsersProps) => {
+export const ListOfUsers = observer(({ store: externalStore, onEdit }: ListOfUsersProps) => {
   const [localStore] = useState(() => new ListOfUsersStore());
   const [userIdForDelete, setUserIdForDelete] = useState<number | null>(null);
   const store = externalStore ?? localStore;
@@ -32,8 +35,8 @@ export const ListOfUsers = observer(({ store: externalStore }: ListOfUsersProps)
     setUserIdForDelete(null);
   };
 
-  const handleEdit = (id: number) => {
-    void id;
+  const handleShare = () => {
+    alert("Ссылка успешно скопирована");
   };
 
   return (
@@ -62,7 +65,7 @@ export const ListOfUsers = observer(({ store: externalStore }: ListOfUsersProps)
               </span>
             </div>
             <div className={styles.actions}>
-              <button className={styles.button} onClick={() => handleEdit(user.id)}>
+              <button className={styles.button} onClick={() => onEdit?.(user)}>
                 <svg
                   width="23"
                   height="23"
@@ -79,7 +82,7 @@ export const ListOfUsers = observer(({ store: externalStore }: ListOfUsersProps)
                   />
                 </svg>
               </button>
-              <button className={styles.button} onClick={() => handleEdit(user.id)}>
+              <button className={styles.button} onClick={handleShare}>
                 <svg
                   width="20"
                   height="22"

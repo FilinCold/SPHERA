@@ -8,6 +8,7 @@ import type { CourseCardProps } from "@/shared/components/CourseCard/types";
 import { CoursePopup } from "@/shared/components/CoursePopup/CoursePopup";
 import type { CourseData } from "@/shared/components/CoursePopup/type";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
+import { Pagination } from "@/widgets/Pagination/Pagination";
 
 type CourseListItem = CourseCardProps & { id: string };
 
@@ -84,9 +85,17 @@ const loadCourses = (): CourseListItem[] => {
   return getInitialCourses();
 };
 
+const ITEMS_PER_PAGE = 4;
+
 export default function CourseMainPage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [courses, setCourses] = useState<CourseListItem[]>(loadCourses);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(courses.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentCourses = courses.slice(startIndex, endIndex);
 
   useEffect(() => {
     localStorage.setItem("courses", JSON.stringify(courses));
@@ -116,11 +125,16 @@ export default function CourseMainPage() {
     setIsPopupOpen(false);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <TitleBar onCreateClick={handleCreateCourse} />
       <div className={style.list}>
-        {courses.map((course) => (
+        {currentCourses.map((course) => (
           <CourseCard
             key={course.id}
             title={course.title}
@@ -134,6 +148,14 @@ export default function CourseMainPage() {
           />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       {isPopupOpen && (
         <div className={style.overlay}>
