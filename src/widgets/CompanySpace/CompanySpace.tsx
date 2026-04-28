@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
 import CompanyCard from "@/shared/components/CompanyCard/CompanyCard";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import TitleBar from "@/shared/components/TitleBar/TitleBar";
 import { PAGES } from "@/shared/config/pages.config";
 import { useStores } from "@/shared/store";
 
@@ -49,17 +49,7 @@ const CompanySpaceComponent = () => {
 
   return (
     <main className={styles.page}>
-      <SearchBar
-        breadcrumbs={[{ label: "Пространства" }]}
-        buttonText="Добавить пространство"
-        buttonLink={PAGES.MADE_SPACE}
-        searchPlaceholder="Поиск по пространствам"
-        searchAriaLabel="Поиск по пространствам"
-        shopFilterLabel="Торговая точка"
-        organizationFilterLabel="Организация"
-        title="Пространства"
-        totalCount={companiesTotalCount}
-      />
+      <TitleBar />
 
       <section className={styles.content}>
         {isCompaniesListLoading ? (

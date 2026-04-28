@@ -1,0 +1,180 @@
+.card {
+  width: 500px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1.2px 6px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  width: 430px;
+}
+
+.header {
+  background: #0b99c1;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  padding: 16px 18px;
+}
+
+.body {
+  color: #232426;
+  font-size: 16px;
+  line-height: 1.35;
+  padding: 20px 24px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #232426;
+  margin-bottom: 8px;
+}
+
+.input,
+.textarea,
+.uploadInput {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #0b99c1;
+    box-shadow: 0 0 0 2px rgba(11, 153, 193, 0.1);
+  }
+
+  &::placeholder {
+    color: #bfbfbf;
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.uploadWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.uploadInput {
+  flex: 1;
+  padding: 16px;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.uploadIcon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  svg {
+    pointer-events: none;
+  }
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.helperText {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 6px;
+}
+
+.imagePreview {
+  margin-top: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+}
+
+.previewImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px 24px;
+  gap: 12px;
+}
+
+.cancelButton,
+.saveButton {
+  flex: 1;
+  height: 44px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton {
+  border: 1px solid #0b99c1;
+  background: transparent;
+  color: #0b99c1;
+  box-shadow: 0 1.2px 6px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    background: #f0fbff;
+  }
+}
+
+.saveButton {
+  border: none;
+  background: #0b99c1;
+  color: #ffffff;
+  box-shadow: 0 1.2px 6px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    background: #0a89ad;
+  }
+
+  &:disabled {
+    background: #bfbfbf;
+    cursor: not-allowed;
+    box-shadow: none;
+
+    &:hover {
+      background: #bfbfbf;
+    }
+  }
+}
+
+.textareaImage {
+  height: 40px;
+}
