@@ -50,7 +50,14 @@ export const CourseCard = observer(
     return (
       <div className={styles.card}>
         <div className={styles.imageWrapper}>
-          <Image src={image} alt={title} className={styles.image} width={100} height={100} />
+          <Image
+            src={image}
+            alt={title}
+            className={styles.image}
+            width={100}
+            height={100}
+            unoptimized
+          />
           <div
             className={`${styles.status} ${
               status === "active"
@@ -71,17 +78,22 @@ export const CourseCard = observer(
 
           <div className={styles.meta}>
             <div className={styles.usersRow}>
-              <div className={styles.avatars}>
-                {store.avatars.slice(0, 3).map((user) => (
-                  <Image
-                    key={user.id}
-                    src={user.avatar}
-                    alt="user"
-                    className={styles.avatar}
-                    width={100}
-                    height={100}
-                  />
-                ))}
+              <div className={styles.usersLeft}>
+                <span className={styles.label}>Сейчас проходят:</span>
+
+                <div className={styles.avatars}>
+                  {store.avatars.slice(0, 3).map((user) => (
+                    <Image
+                      key={user.id}
+                      src={user.avatar}
+                      alt="user"
+                      className={styles.avatar}
+                      width={44}
+                      height={44}
+                      unoptimized
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className={styles.usersCount}>{usersCount} человек</div>
@@ -91,11 +103,11 @@ export const CourseCard = observer(
           </div>
 
           <div className={styles.actions}>
-            <button className={`${styles.button} ${styles.primary}`} onClick={handleOpenCourse}>
+            <button className={`${styles.buttonView} ${styles.primary}`} onClick={handleOpenCourse}>
               Смотреть курс
             </button>
 
-            <button className={`${styles.button} ${styles.secondary}`} onClick={handleCopy}>
+            <button className={`${styles} ${styles.secondary}`} onClick={handleCopy}>
               <svg
                 width="22"
                 height="22"

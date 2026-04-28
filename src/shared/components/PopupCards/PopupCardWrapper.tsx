@@ -39,10 +39,10 @@ const PopupCardWrapper = () => {
         },
       ]}
       onSubmit={() => {
-        console.log("submit", { role, fio, email });
+        console.warn("submit", { role, fio, email });
       }}
       onCancel={() => {
-        console.log("cancel");
+        console.warn("cancel");
       }}
     />
   );

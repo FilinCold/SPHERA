@@ -1,10 +1,32 @@
+"use client";
+
+import { useState } from "react";
+
 import { CourseCard } from "@/shared/components/CourseCard/CourseCard";
+import style from "@/shared/components/CourseCard/CourseCard.module.scss";
 import type { CourseCardProps } from "@/shared/components/CourseCard/types";
+import { CoursePopup } from "@/shared/components/CoursePopup/CoursePopup";
+import type { CourseData } from "@/shared/components/CoursePopup/type";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
 
 type CourseListItem = CourseCardProps & { id: string };
 
-const courses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
+const mockUsers = [
+  {
+    id: 1,
+    avatar: "https://i.pravatar.cc/150?img=1",
+  },
+  {
+    id: 2,
+    avatar: "https://i.pravatar.cc/150?img=2",
+  },
+  {
+    id: 3,
+    avatar: "https://i.pravatar.cc/150?img=3",
+  },
+];
+
+const initialCourses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
   id: `course-${index + 1}`,
   title: "Супер курс",
   description: "Lorem ipsum dolor sit amet...",
@@ -13,32 +35,64 @@ const courses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
   usersCount: 89,
   date: "20.02.2026",
   link: "#",
-  users: [],
+  users: mockUsers,
 }));
 
-/*
-// Пример реальной загрузки курсов на страницу (вместо мокового массива выше)
-const [courses, setCourses] = useState<CourseCardProps[]>([]);
+export default function CourseMainPage() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [courses, setCourses] = useState<CourseListItem[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedCourses = localStorage.getItem("courses");
 
-useEffect(() => {
-  const fetchCourses = async () => {
-    const response = await fetch("/api/courses", { method: "GET" });
-    if (!response.ok) throw new Error("Не удалось загрузить курсы");
-    const data = (await response.json()) as CourseCardProps[];
-    setCourses(data);
+      if (savedCourses) {
+        return JSON.parse(savedCourses);
+      }
+    }
+
+    return initialCourses;
+  });
+
+  const handleCreateCourse = () => {
+    setIsPopupOpen(true);
   };
 
-  fetchCourses();
-}, []);
-*/
+  const handleSaveCourse = (courseData: CourseData) => {
+    const newCourse: CourseListItem = {
+      id: `course-${Date.now()}`,
+      title: courseData.title,
+      description: courseData.description,
+      image: courseData.coverImage || "https://picsum.photos/403/300",
+      status: "active" as const,
+      usersCount: 0,
+      date: new Date().toLocaleDateString("ru-RU"),
+      link: "#",
+      users: [],
+    };
 
-export default function CourseMainPage() {
+    const updatedCourses = [newCourse, ...courses];
+
+    setCourses(updatedCourses);
+    localStorage.setItem("courses", JSON.stringify(updatedCourses));
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
   return (
     <>
-      <TitleBar />
-      {courses.map(({ id, ...course }) => (
-        <CourseCard key={id} {...course} />
-      ))}
+      <TitleBar onCreateClick={handleCreateCourse} />
+      <div className={style.list}>
+        {courses.map(({ id, ...course }) => (
+          <CourseCard key={id} {...course} />
+        ))}
+      </div>
+
+      {isPopupOpen && (
+        <div className={style.overlay}>
+          <CoursePopup onCancel={handleClosePopup} onSave={handleSaveCourse} />
+        </div>
+      )}
     </>
   );
 }
