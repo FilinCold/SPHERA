@@ -1,23 +1,28 @@
 .editorShell {
-  margin-top: 12px;
+  margin-top: 22px;
 }
 
 .editor {
   :global(.ql-toolbar.ql-snow) {
-    border: 1px solid #d6dbe1;
+    border: 1px solid #dbe5ec;
     border-bottom: none;
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
+    background: #f8fbfd;
   }
 
   :global(.ql-container.ql-snow) {
-    border: 1px solid #d6dbe1;
-    border-radius: 0 0 12px 12px;
+    border: 1px solid #dbe5ec;
+    border-radius: 0 0 16px 16px;
+    background: #ffffff;
   }
 
   :global(.ql-editor) {
-    min-height: 280px;
-    max-height: 380px;
+    min-height: 220px;
+    max-height: 340px;
     overflow-y: auto;
-    padding-right: 14px;
+    padding: 18px 18px 18px 16px;
+    color: #1f2937;
+    font-size: 15px;
+    line-height: 1.65;
   }
 }
