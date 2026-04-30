@@ -11,7 +11,8 @@ import type { ModalProps } from "./types";
 
 export const Modal = (props: ModalProps) => {
   const { children, className, hideCloseButton = false, isOpen, onClose, showCloseButton } = props;
-  const shouldShowCloseButton = typeof showCloseButton === "boolean" ? showCloseButton : !hideCloseButton;
+  const shouldShowCloseButton =
+    typeof showCloseButton === "boolean" ? showCloseButton : !hideCloseButton;
   const modalContentClassName = clsx(styles.modalContent, className);
 
   useEffect(() => {
