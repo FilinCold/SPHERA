@@ -11,6 +11,7 @@ import styles from "./SimpleCard.module.scss";
 import type { SimpleCardProps, FormData, InputField } from "./types";
 
 const EMPTY_FIELD_MESSAGE = "Заполните поле";
+const INVALID_EMAIL_MESSAGE = "Введите корректный email";
 
 const EMAIL_FORMAT_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -48,7 +49,13 @@ function areRequiredFieldsSatisfied(fields: InputField[], data: FormData): boole
       return false;
     }
 
+    const patternRe = field.pattern ? new RegExp(field.pattern) : null;
+
     if (field.type === "email" && !EMAIL_FORMAT_RE.test(raw.trim())) {
+      return false;
+    }
+
+    if (patternRe && !patternRe.test(raw.trim())) {
       return false;
     }
   }
@@ -275,14 +282,23 @@ export const SimpleCard = ({
         <input
           name={field.name}
           required={Boolean(field.required)}
+          pattern={field.pattern}
           aria-invalid={Boolean(err)}
           className={err ? styles.inputInvalid : undefined}
           type={field.type || "text"}
           placeholder={field.placeholder || "Введите значение"}
           value={typeof value === "string" ? value : ""}
           onBlur={(e) => {
-            if (field.required && !e.target.value.trim()) {
+            const trimmedValue = e.target.value.trim();
+
+            if (field.required && !trimmedValue) {
               setFieldErrors((prev) => ({ ...prev, [field.name]: EMPTY_FIELD_MESSAGE }));
+
+              return;
+            }
+
+            if (field.type === "email" && trimmedValue && !EMAIL_FORMAT_RE.test(trimmedValue)) {
+              setFieldErrors((prev) => ({ ...prev, [field.name]: INVALID_EMAIL_MESSAGE }));
             }
           }}
           onChange={(e) => handleChange(field.name, e.target.value)}
@@ -302,13 +318,16 @@ export const SimpleCard = ({
   const rootClass = clsx(styles.card, embedded && styles.cardEmbedded, className);
   const body = (
     <>
-      <div className={clsx(styles.header, headerAlign === "center" && styles.headerCentered)}>
+      <div
+        className={clsx(styles.header, headerAlign === "center" && styles.headerCentered)}
+        data-slot="header"
+      >
         {title}
       </div>
 
-      <div className={styles.body}>
+      <div className={styles.body} data-slot="body">
         {fields.map((field) => (
-          <div key={field.name} className={styles.field}>
+          <div key={field.name} className={styles.field} data-slot="field">
             <label>{field.label}</label>
             {renderField(field)}
           </div>

@@ -85,7 +85,7 @@ function pickSubscriptionEnd(record: Record<string, unknown>): unknown {
 
 function pickActiveSubscriptionRange(
   record: Record<string, unknown>,
-): { start: string; end: string } | null {
+): { id?: string; start: string; end: string } | null {
   const raw = record.actual_subscriptions;
 
   if (!Array.isArray(raw) || raw.length === 0) {
@@ -108,11 +108,57 @@ function pickActiveSubscriptionRange(
     const ed = row.end_date;
 
     if (typeof sd === "string" && sd.trim() && typeof ed === "string" && ed.trim()) {
-      return { start: sd.trim(), end: ed.trim() };
+      const idRaw = row.id;
+      const id =
+        typeof idRaw === "string" || typeof idRaw === "number" ? String(idRaw).trim() : undefined;
+
+      return { ...(id ? { id } : {}), start: sd.trim(), end: ed.trim() };
     }
   }
 
   return null;
+}
+
+function pickLatestSubscriptionRange(
+  record: Record<string, unknown>,
+): { id?: string; start: string; end: string } | null {
+  const raw = record.actual_subscriptions;
+
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return null;
+  }
+
+  let best: { id?: string; start: string; end: string } | null = null;
+  let bestTs = Number.NEGATIVE_INFINITY;
+
+  for (const item of raw) {
+    if (!item || typeof item !== "object") {
+      continue;
+    }
+
+    const row = item as Record<string, unknown>;
+    const sd = row.start_date;
+    const ed = row.end_date;
+
+    if (typeof sd !== "string" || !sd.trim() || typeof ed !== "string" || !ed.trim()) {
+      continue;
+    }
+
+    const ts = Date.parse(ed.trim());
+
+    if (Number.isNaN(ts) || ts <= bestTs) {
+      continue;
+    }
+
+    const idRaw = row.id;
+    const id =
+      typeof idRaw === "string" || typeof idRaw === "number" ? String(idRaw).trim() : undefined;
+
+    best = { ...(id ? { id } : {}), start: sd.trim(), end: ed.trim() };
+    bestTs = ts;
+  }
+
+  return best;
 }
 
 function rawToRuDateField(value: unknown): string | undefined {
@@ -215,16 +261,20 @@ function mapRecord(item: unknown): CompanyListItem | null {
   const statusSource = r.status ?? r.is_active ?? r.subscription_status ?? r.state;
   const status = fromSpaceCompany ?? mapStatus(statusSource);
   const activeSub = pickActiveSubscriptionRange(r);
-  const startRaw = activeSub?.start ?? pickSubscriptionStart(r);
-  const endRaw = activeSub?.end ?? pickSubscriptionEnd(r);
+  const latestSub = pickLatestSubscriptionRange(r);
+  const pickedSub = activeSub ?? (status === "active" ? latestSub : null);
+  const startRaw = pickedSub?.start ?? pickSubscriptionStart(r);
+  const endRaw = pickedSub?.end ?? pickSubscriptionEnd(r);
   const subscriptionDateRangeStart = rawToRuDateField(startRaw);
   const subscriptionDateRangeEnd = rawToRuDateField(endRaw);
   const subscriptionDate = rawToRuDateField(endRaw ?? startRaw) ?? "—";
 
   return {
     id: String(idRaw),
+    ...(typeof r.slug === "string" && r.slug.trim() ? { slug: r.slug.trim() } : {}),
     name: nameRaw.trim(),
     ...(typeof r.description === "string" ? { description: r.description } : {}),
+    ...(pickedSub?.id ? { activeSubscriptionId: pickedSub.id } : {}),
     subscriptionDate,
     status,
     ...(subscriptionDateRangeStart !== undefined ? { subscriptionDateRangeStart } : {}),

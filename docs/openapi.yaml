@@ -1,0 +1,3542 @@
+openapi: 3.0.3
+info:
+  title: ""
+  version: 0.0.0
+paths:
+  /api/v1/attempt/{attempt_id}/questions/:
+    get:
+      operationId: attempt_questions_list
+      description: Класс представления для Получения всех вопросов у попытки.
+      summary: id Вопросов у текущей попытки.
+      parameters:
+        - in: path
+          name: attempt_id
+          schema:
+            type: integer
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - attempts
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedQuestionAttemptList"
+          description: ""
+  /api/v1/attempts/{attempt_id}/questions/{question_id}/answers/:
+    get:
+      operationId: attempts_questions_answers_list
+      description: Класс представления для Ответов.
+      summary: Ответы на вопрос
+      parameters:
+        - in: path
+          name: attempt_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - answers
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedAnswerList"
+          description: ""
+    post:
+      operationId: attempts_questions_answers_create
+      description: Класс представления для Ответов.
+      summary: Создать ответ на вопрос
+      parameters:
+        - in: path
+          name: attempt_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - answers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Answer"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Answer"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Answer"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Answer"
+          description: ""
+  /api/v1/attempts/{attempt_id}/questions/{question_id}/answers/{id}/:
+    get:
+      operationId: attempts_questions_answers_retrieve
+      description: Класс представления для Ответов.
+      summary: Конкретный ответ на вопрос
+      parameters:
+        - in: path
+          name: attempt_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - answers
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Answer"
+          description: ""
+  /api/v1/auth/{registration_uuid}/:
+    get:
+      operationId: auth_retrieve
+      description: Получение пользователя и смена его пароля по ссылке.
+      summary: Получение email перед установкой нового пароля по ссылке.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetUserPassword"
+          description: ""
+    put:
+      operationId: auth_update
+      description: Получение пользователя и смена его пароля по ссылке.
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: auth_partial_update
+      description: Получение пользователя и смена его пароля по ссылке.
+      summary: Установка нового пароля по ссылке.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetUserPassword"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SetUserPassword"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SetUserPassword"
+        required: true
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+  /api/v1/auth/change-password/:
+    put:
+      operationId: auth_change_password_update
+      description: Обновление пароля пользователя.
+      summary: Метод PUT запрещен.
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: auth_change_password_partial_update
+      description: Обновление пароля пользователя.
+      summary: Обновление своего пароля пользователем.
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeUserPassword"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ChangeUserPassword"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ChangeUserPassword"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+  /api/v1/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Получение информации о себе и ее редактирование.
+      summary: Получение информации о себе.
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRetrieveUpdate"
+          description: ""
+    put:
+      operationId: auth_me_update
+      description: Получение информации о себе и ее редактирование.
+      summary: Метод PUT запрещен.
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: auth_me_partial_update
+      description: Получение информации о себе и ее редактирование.
+      summary: Редактирование информации о себе.
+      tags:
+        - users
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                phone:
+                  type: string
+                resume:
+                  type: file
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRetrieveUpdate"
+          description: ""
+  /api/v1/auth/reset-password/:
+    put:
+      operationId: auth_reset_password_update
+      description: Сброс пароля пользователя через email.
+      summary: Метод PUT запрещен.
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: auth_reset_password_partial_update
+      description: Сброс пароля пользователя через email.
+      summary: Сброс своего пароля через email.
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetUserPassword"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ResetUserPassword"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ResetUserPassword"
+        required: true
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: ""
+  /api/v1/auth/token/:
+    post:
+      operationId: auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenObtainPair"
+          description: ""
+  /api/v1/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefresh"
+          description: ""
+  /api/v1/auth/token/verify/:
+    post:
+      operationId: auth_token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenVerify"
+          description: ""
+  /api/v1/candidate-registration/:
+    post:
+      operationId: candidate_registration_create
+      description: Регистрация кандидата.
+      tags:
+        - candidates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CandidateReg"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CandidateReg"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CandidateReg"
+        required: true
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CandidateReg"
+          description: ""
+  /api/v1/companies/:
+    get:
+      operationId: companies_list
+      description: Класс представления для компаний.
+      summary: Список компаний кратко.
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - name: ordering
+          required: false
+          in: query
+          description: Which field to use when ordering the results.
+          schema:
+            type: string
+        - name: search
+          required: false
+          in: query
+          description: A search term.
+          schema:
+            type: string
+      tags:
+        - companies
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCompanyBriefList"
+          description: ""
+    post:
+      operationId: companies_create
+      description: Класс представления для компаний.
+      summary: Создать компанию.
+      tags:
+        - companies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Company"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Company"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+          description: ""
+  /api/v1/companies/{company_slug}/courses/:
+    get:
+      operationId: companies_courses_list
+      description: Класс представления для курсов.
+      summary: Список курсов компании
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCourseList"
+          description: ""
+    post:
+      operationId: companies_courses_create
+      description: Класс представления для курсов.
+      summary: Создать новый курс
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+      tags:
+        - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Course"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Course"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+          description: ""
+  /api/v1/companies/{company_slug}/courses/{course_uuid}/:
+    get:
+      operationId: companies_courses_retrieve
+      description: Класс представления для курсов.
+      summary: Получить курс по course_uuid
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+          description: ""
+    patch:
+      operationId: companies_courses_partial_update
+      description: Класс представления для курсов.
+      summary: Частичное обновление курса
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Course"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Course"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+          description: ""
+    delete:
+      operationId: companies_courses_destroy
+      description: Класс представления для курсов.
+      summary: Мягкое удаление курса (в корзину)
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/companies/{company_slug}/courses/{course_uuid}/info/:
+    get:
+      operationId: companies_courses_info_retrieve
+      description: Возвращает дату удаления объекта
+      summary: Информация об объекте в корзине
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedAt"
+          description: ""
+  /api/v1/companies/{company_slug}/courses/{course_uuid}/permanent/:
+    delete:
+      operationId: companies_courses_permanent_destroy
+      description: Безвозвратное удаление объекта из базы данных
+      summary: Полное удаление объекта из БД
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: Объект удалён
+  /api/v1/companies/{company_slug}/courses/{course_uuid}/publish/:
+    patch:
+      operationId: companies_courses_publish_partial_update
+      description: Переводит курс из статуса DRAFT в PUBLISHED
+      summary: Опубликовать курс из черновика
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          description: Курс опубликован
+  /api/v1/companies/{company_slug}/courses/{course_uuid}/restore/:
+    patch:
+      operationId: companies_courses_restore_partial_update
+      description: Меняет статус с DELETED на DRAFT, очищает deleted_at
+      summary: Восстановление объекта из корзины
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          description: Обьект восстановлен
+  /api/v1/companies/{company_slug}/courses/trash/:
+    get:
+      operationId: companies_courses_trash_list
+      description: Возвращает список курсов в корзине (статус DELETED)
+      summary: Список удалённых курсов
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCourseList"
+          description: ""
+  /api/v1/companies/{company_slug}/employees/:
+    get:
+      operationId: companies_employees_list
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Список сотрудников.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - name: ordering
+          required: false
+          in: query
+          description: Which field to use when ordering the results.
+          schema:
+            type: string
+        - name: search
+          required: false
+          in: query
+          description: A search term.
+          schema:
+            type: string
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedEmployeesList"
+          description: ""
+    post:
+      operationId: companies_employees_create
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Создать сотрудника.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+      tags:
+        - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Employees"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Employees"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Employees"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employees"
+          description: ""
+  /api/v1/companies/{company_slug}/employees/{id}/:
+    get:
+      operationId: companies_employees_retrieve
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Детали сотрудника.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employees"
+          description: ""
+    put:
+      operationId: companies_employees_update
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: companies_employees_partial_update
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Частичное обновление сотрудника.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Employees"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Employees"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Employees"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employees"
+          description: ""
+    delete:
+      operationId: companies_employees_destroy
+      description: "Управление сотрудниками: создание, получение, обновление, удаление)."
+      summary: Удалить сотрудника
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/companies/{company_slug}/subscriptions/:
+    get:
+      operationId: companies_subscriptions_list
+      description: Класс представления для подписок компаний.
+      summary: Список подписок.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - name: ordering
+          required: false
+          in: query
+          description: Which field to use when ordering the results.
+          schema:
+            type: string
+      tags:
+        - subscriptions
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedSubscriptionList"
+          description: ""
+    post:
+      operationId: companies_subscriptions_create
+      description: Класс представления для подписок компаний.
+      summary: Создать подписку.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+      tags:
+        - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+          description: ""
+  /api/v1/companies/{company_slug}/subscriptions/{id}/:
+    get:
+      operationId: companies_subscriptions_retrieve
+      description: Класс представления для подписок компаний.
+      summary: Детали подписки.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - subscriptions
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+          description: ""
+    put:
+      operationId: companies_subscriptions_update
+      description: Класс представления для подписок компаний.
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - subscriptions
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: companies_subscriptions_partial_update
+      description: Класс представления для подписок компаний.
+      summary: Частичное обновление подписки.
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - subscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+          description: ""
+    delete:
+      operationId: companies_subscriptions_destroy
+      description: Класс представления для подписок компаний.
+      summary: Удалить подписку
+      parameters:
+        - in: path
+          name: company_slug
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - subscriptions
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/companies/{slug}/:
+    get:
+      operationId: companies_retrieve
+      description: Класс представления для компаний.
+      summary: Детали компании подробно.
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      tags:
+        - companies
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDetail"
+          description: ""
+    put:
+      operationId: companies_update
+      description: Класс представления для компаний.
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      tags:
+        - companies
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: companies_partial_update
+      description: Класс представления для компаний.
+      summary: Частичное обновление компании.
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      tags:
+        - companies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Company"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Company"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+          description: ""
+    delete:
+      operationId: companies_destroy
+      description: Класс представления для компаний.
+      summary: Удалить компанию
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      tags:
+        - companies
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/courses/{course_uuid}/applications/:
+    get:
+      operationId: courses_applications_list
+      description: Получение откликов, установка статусов и добавление комментариев.
+      summary: Список откликов кандидатов на курс.
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - name: ordering
+          required: false
+          in: query
+          description: Which field to use when ordering the results.
+          schema:
+            type: string
+      tags:
+        - applications
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCourseCandidatesListList"
+          description: ""
+  /api/v1/courses/{course_uuid}/applications/{id}/:
+    get:
+      operationId: courses_applications_retrieve
+      description: Получение откликов, установка статусов и добавление комментариев.
+      summary: Отклик кандидата на курс.
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - applications
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseCandidateDetail"
+          description: ""
+    put:
+      operationId: courses_applications_update
+      description: Получение откликов, установка статусов и добавление комментариев.
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - applications
+      security:
+        - jwtAuth: []
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: courses_applications_partial_update
+      description: Получение откликов, установка статусов и добавление комментариев.
+      summary: Частичное обновление отклика (статус, комментарий).
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseCandidateDetail"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/CourseCandidateDetail"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CourseCandidateDetail"
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseCandidateDetail"
+          description: ""
+  /api/v1/courses/{course_uuid}/candidate-enrollment/:
+    post:
+      operationId: courses_candidate_enrollment_create
+      description: Администратор записывает кандидата на курс по email
+      summary: Ручная запись кандидата на курс
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  course_link:
+                    type: string
+          description: Кандидат записан
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  course_link:
+                    type: string
+          description: Уже записан
+        "400":
+          description: Email обязателен
+        "404":
+          description: Кандидат не найден
+  /api/v1/courses/{course_uuid}/candidates/{candidate_id}/answers/:
+    get:
+      operationId: courses_candidates_answers_retrieve
+      description: Возвращает все ответы кандидата по всем урокам курса
+      summary: Просмотр ответов кандидата
+      parameters:
+        - in: path
+          name: candidate_id
+          schema:
+            type: integer
+          required: true
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+          required: true
+      tags:
+        - courses
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CandidateAnswers"
+          description: ""
+  /api/v1/courses/{course_uuid}/lessons/:
+    get:
+      operationId: courses_lessons_list
+      description: Класс представления для уроков.
+      summary: Список уроков курса
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedLessonList"
+          description: ""
+    post:
+      operationId: courses_lessons_create
+      description: Класс представления для уроков.
+      summary: Создать урок
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+      tags:
+        - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+          description: ""
+  /api/v1/courses/{course_uuid}/lessons/{id}/:
+    get:
+      operationId: courses_lessons_retrieve
+      description: Класс представления для уроков.
+      summary: Получить урок по id
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+          description: ""
+    patch:
+      operationId: courses_lessons_partial_update
+      description: Класс представления для уроков.
+      summary: Частичное обновление урока
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Lesson"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+          description: ""
+    delete:
+      operationId: courses_lessons_destroy
+      description: Класс представления для уроков.
+      summary: Мягкое удаление урока
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/courses/{course_uuid}/lessons/{id}/info/:
+    get:
+      operationId: courses_lessons_info_retrieve
+      description: Возвращает дату удаления объекта
+      summary: Информация об объекте в корзине
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedAt"
+          description: ""
+  /api/v1/courses/{course_uuid}/lessons/{id}/permanent/:
+    delete:
+      operationId: courses_lessons_permanent_destroy
+      description: Безвозвратное удаление объекта из базы данных
+      summary: Полное удаление объекта из БД
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: Объект удалён
+  /api/v1/courses/{course_uuid}/lessons/{id}/publish/:
+    patch:
+      operationId: courses_lessons_publish_partial_update
+      description: Переводит урок из статуса DRAFT в PUBLISHED
+      summary: Опубликовать урок из черновика
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          description: Урок опубликован
+  /api/v1/courses/{course_uuid}/lessons/{id}/restore/:
+    patch:
+      operationId: courses_lessons_restore_partial_update
+      description: Меняет статус с DELETED на DRAFT, очищает deleted_at
+      summary: Восстановление объекта из корзины
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          description: Обьект восстановлен
+  /api/v1/courses/{course_uuid}/lessons/trash/:
+    get:
+      operationId: courses_lessons_trash_list
+      description: Возвращает список уроков в корзине (статус DELETED)
+      summary: Список удалённых уроков
+      parameters:
+        - in: path
+          name: course_uuid
+          schema:
+            type: string
+            pattern: ^[-\w]+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedLessonList"
+          description: ""
+  /api/v1/lessons/{lesson_id}/complete/:
+    post:
+      operationId: lessons_complete_create
+      description: Завершение урока
+      summary: Завершение урока кандидатом
+      parameters:
+        - in: path
+          name: lesson_id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - lessons
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ""
+  /api/v1/lessons/{lesson_id}/tests/:
+    get:
+      operationId: lessons_tests_list
+      description: Класс представления для Тестов.
+      summary: Список тестов.
+      parameters:
+        - in: path
+          name: lesson_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+      tags:
+        - test
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedTestList"
+          description: ""
+    post:
+      operationId: lessons_tests_create
+      description: Класс представления для Тестов.
+      summary: Создать тест.
+      parameters:
+        - in: path
+          name: lesson_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Test"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Test"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Test"
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+          description: ""
+  /api/v1/lessons/{lesson_id}/tests/{id}/:
+    get:
+      operationId: lessons_tests_retrieve
+      description: Класс представления для Тестов.
+      summary: Детали теста подробно.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: lesson_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - test
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+          description: ""
+    patch:
+      operationId: lessons_tests_partial_update
+      description: Класс представления для Тестов.
+      summary: Частичное обновление теста.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: lesson_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Test"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Test"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Test"
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+          description: ""
+    delete:
+      operationId: lessons_tests_destroy
+      description: Класс представления для Тестов.
+      summary: Удалить тест
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: lesson_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - test
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/questions/{question_id}/options/:
+    get:
+      operationId: questions_options_list
+      description: Класс представления для Вариантов ответов.
+      summary: Список вариантов ответов.
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - options
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedOptionAnswerList"
+          description: ""
+    post:
+      operationId: questions_options_create
+      description: Класс представления для Вариантов ответов.
+      summary: Создать варианты ответов.
+      parameters:
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - options
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptionAnswer"
+          description: ""
+  /api/v1/questions/{question_id}/options/{id}/:
+    get:
+      operationId: questions_options_retrieve
+      description: Класс представления для Вариантов ответов.
+      summary: Детали вариантов ответов подробно.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - options
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptionAnswer"
+          description: ""
+    patch:
+      operationId: questions_options_partial_update
+      description: Класс представления для Вариантов ответов.
+      summary: Частичное обновление вариантов ответов.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - options
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OptionAnswer"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptionAnswer"
+          description: ""
+    delete:
+      operationId: questions_options_destroy
+      description: Класс представления для Вариантов ответов.
+      summary: Удалить вариант ответа
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: question_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - options
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/registration/{registration_uuid}/:
+    get:
+      operationId: registration_retrieve
+      description: Получение нового сотрудника и его финальная регистрация по ссылке.
+      summary: Получение нового сотрудника перед финальной регистрацией.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeFinalReg"
+          description: ""
+    put:
+      operationId: registration_update
+      description: Получение нового сотрудника и его финальная регистрация по ссылке.
+      summary: Метод PUT запрещен.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - employees
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "405":
+          description: Method Not Allowed
+    patch:
+      operationId: registration_partial_update
+      description: Получение нового сотрудника и его финальная регистрация по ссылке.
+      summary: Финальная регистрация по ссылке нового сотрудника.
+      parameters:
+        - in: path
+          name: registration_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeFinalReg"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/EmployeeFinalReg"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/EmployeeFinalReg"
+        required: true
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeFinalReg"
+          description: ""
+  /api/v1/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum:
+              - json
+              - yaml
+        - in: query
+          name: lang
+          schema:
+            type: string
+            enum:
+              - af
+              - ar
+              - ar-dz
+              - ast
+              - az
+              - be
+              - bg
+              - bn
+              - br
+              - bs
+              - ca
+              - ckb
+              - cs
+              - cy
+              - da
+              - de
+              - dsb
+              - el
+              - en
+              - en-au
+              - en-gb
+              - eo
+              - es
+              - es-ar
+              - es-co
+              - es-mx
+              - es-ni
+              - es-ve
+              - et
+              - eu
+              - fa
+              - fi
+              - fr
+              - fy
+              - ga
+              - gd
+              - gl
+              - he
+              - hi
+              - hr
+              - hsb
+              - hu
+              - hy
+              - ia
+              - id
+              - ig
+              - io
+              - is
+              - it
+              - ja
+              - ka
+              - kab
+              - kk
+              - km
+              - kn
+              - ko
+              - ky
+              - lb
+              - lt
+              - lv
+              - mk
+              - ml
+              - mn
+              - mr
+              - ms
+              - my
+              - nb
+              - ne
+              - nl
+              - nn
+              - os
+              - pa
+              - pl
+              - pt
+              - pt-br
+              - ro
+              - ru
+              - sk
+              - sl
+              - sq
+              - sr
+              - sr-latn
+              - sv
+              - sw
+              - ta
+              - te
+              - tg
+              - th
+              - tk
+              - tr
+              - tt
+              - udm
+              - ug
+              - uk
+              - ur
+              - uz
+              - vi
+              - zh-hans
+              - zh-hant
+      tags:
+        - schema
+      security:
+        - jwtAuth: []
+        - {}
+      responses:
+        "200":
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ""
+  /api/v1/tests/{test_id}/attempts/:
+    post:
+      operationId: tests_attempts_create
+      description: Класс представления для СОЗДАНИЯ Попыток.
+      summary: Создать попытку.
+      parameters:
+        - in: path
+          name: test_id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - attempts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestAttempt"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TestAttempt"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TestAttempt"
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestAttempt"
+          description: ""
+  /api/v1/tests/{test_id}/questions/:
+    get:
+      operationId: tests_questions_list
+      description: Класс представления для Вопросов.
+      summary: Список вопросов.
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - in: path
+          name: test_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - questions
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedQuestionList"
+          description: ""
+    post:
+      operationId: tests_questions_create
+      description: Класс представления для Вопросов.
+      summary: Создать вопрос.
+      parameters:
+        - in: path
+          name: test_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Question"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Question"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Question"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+          description: ""
+  /api/v1/tests/{test_id}/questions/{id}/:
+    get:
+      operationId: tests_questions_retrieve
+      description: Класс представления для Вопросов.
+      summary: Детали вопроса подробно.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: test_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - questions
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+          description: ""
+    patch:
+      operationId: tests_questions_partial_update
+      description: Класс представления для Вопросов.
+      summary: Частичное обновление вопроса.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: test_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Question"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Question"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Question"
+        required: true
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+          description: ""
+    delete:
+      operationId: tests_questions_destroy
+      description: Класс представления для Вопросов.
+      summary: Удалить вопрос
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: test_id
+          schema:
+            type: string
+            pattern: ^\d+$
+          required: true
+      tags:
+        - questions
+      security:
+        - jwtAuth: []
+      responses:
+        "204":
+          description: No response body
+  /api/v1/tests/attempts/{attempt_id}/:
+    get:
+      operationId: tests_attempts_retrieve
+      description: Класс представления для Получения Попыток.
+      summary: Попытка подробно.
+      parameters:
+        - in: path
+          name: attempt_id
+          schema:
+            type: integer
+          required: true
+      tags:
+        - attempts
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestAttempt"
+          description: ""
+components:
+  schemas:
+    Answer:
+      type: object
+      description: Миксин для проверки правильности ответов.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text: {}
+        is_correct:
+          type: string
+          readOnly: true
+      required:
+        - id
+        - is_correct
+        - text
+    Candidate:
+      type: object
+      description: Получение информации о кандидате.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          title: ФИО пользователя
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 128
+      required:
+        - email
+        - id
+    CandidateAnswers:
+      type: object
+      properties:
+        course:
+          type: string
+          readOnly: true
+        candidate:
+          type: string
+          readOnly: true
+        lessons:
+          type: string
+          readOnly: true
+      required:
+        - candidate
+        - course
+        - lessons
+    CandidateReg:
+      type: object
+      description: '"Регистрация кандидата.'
+      properties:
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 128
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 64
+          minLength: 8
+        name:
+          type: string
+          nullable: true
+          title: ФИО пользователя
+          maxLength: 128
+        phone:
+          type: string
+          nullable: true
+          title: Номер телефона
+          maxLength: 32
+        consent_to_data_processing:
+          type: boolean
+          writeOnly: true
+      required:
+        - consent_to_data_processing
+        - email
+        - password
+    ChangeUserPassword:
+      type: object
+      description: Обновление пароля пользователя с проверкой текущего.
+      properties:
+        current_password:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 64
+          minLength: 8
+      required:
+        - current_password
+        - password
+    Company:
+      type: object
+      description: Класс сериализатора для компаний.
+      properties:
+        name:
+          type: string
+          title: Название компании
+          maxLength: 128
+        description:
+          type: string
+          nullable: true
+          title: Описание компании
+          maxLength: 1000
+        slug:
+          type: string
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+        - name
+    CompanyBrief:
+      type: object
+      description: Класс сериализатора для возврата краткой информации о компаний.
+      properties:
+        name:
+          type: string
+          title: Название компании
+          maxLength: 128
+        slug:
+          type: string
+          title: Уникальный слаг компании
+          maxLength: 192
+          pattern: ^[-a-zA-Z0-9_]+$
+        space_company:
+          type: string
+          readOnly: true
+      required:
+        - name
+        - slug
+        - space_company
+    CompanyDetail:
+      type: object
+      description: Класс сериализатора для возврата подробной информации о компании.
+      properties:
+        name:
+          type: string
+          title: Название компании
+          maxLength: 128
+        description:
+          type: string
+          nullable: true
+          title: Описание компании
+          maxLength: 1000
+        slug:
+          type: string
+          title: Уникальный слаг компании
+          maxLength: 192
+          pattern: ^[-a-zA-Z0-9_]+$
+        space_company:
+          type: string
+          readOnly: true
+        actual_subscriptions:
+          type: array
+          items:
+            type: object
+          readOnly: true
+      required:
+        - actual_subscriptions
+        - name
+        - slug
+        - space_company
+    Course:
+      type: object
+      description: Сериализатор для курсов.
+      properties:
+        course_uuid:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          title: Название курса
+          maxLength: 128
+        description:
+          type: string
+          maxLength: 1000
+        deleted_at:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+            - $ref: "#/components/schemas/CourseStatusEnum"
+          readOnly: true
+        creator:
+          type: integer
+          readOnly: true
+          nullable: true
+          title: Создатель курса
+        has_active_applications:
+          type: string
+          readOnly: true
+        save_as_draft:
+          type: boolean
+          writeOnly: true
+      required:
+        - course_uuid
+        - creator
+        - deleted_at
+        - description
+        - has_active_applications
+        - status
+        - title
+    CourseCandidateDetail:
+      type: object
+      description: Получение отклика, установка статуса и добавление комментария.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        progress:
+          type: string
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/Status01aEnum"
+        start_date:
+          type: string
+          readOnly: true
+        end_date:
+          type: string
+          readOnly: true
+        candidate:
+          allOf:
+            - $ref: "#/components/schemas/Candidate"
+          readOnly: true
+        comment:
+          type: string
+          nullable: true
+          title: Комментарий
+      required:
+        - candidate
+        - end_date
+        - id
+        - progress
+        - start_date
+    CourseCandidatesList:
+      type: object
+      description: Получение откликов (кандидатов) курса.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        progress:
+          type: string
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/Status01aEnum"
+        start_date:
+          type: string
+          readOnly: true
+        end_date:
+          type: string
+          readOnly: true
+        candidate_email:
+          type: string
+          readOnly: true
+      required:
+        - candidate_email
+        - end_date
+        - id
+        - progress
+        - start_date
+    CourseStatusEnum:
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - ARCHIVED
+        - DELETED
+      type: string
+      description: |-
+        * `DRAFT` - Черновик
+        * `PUBLISHED` - Опубликован
+        * `ARCHIVED` - Архивирован
+        * `DELETED` - Удален
+    DeletedAt:
+      type: object
+      properties:
+        deleted_at:
+          type: string
+          format: date-time
+      required:
+        - deleted_at
+    EmployeeFinalReg:
+      type: object
+      description: Получение полей нового сотрудника и его финальная регистрация.
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Адрес электронной почты
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 64
+          minLength: 8
+        name:
+          type: string
+          nullable: true
+          title: ФИО пользователя
+          maxLength: 128
+        phone:
+          type: string
+          nullable: true
+          title: Номер телефона
+          maxLength: 32
+        company:
+          allOf:
+            - $ref: "#/components/schemas/Company"
+          readOnly: true
+        role:
+          allOf:
+            - $ref: "#/components/schemas/RoleEnum"
+          readOnly: true
+          title: Роль пользователя
+      required:
+        - company
+        - email
+        - password
+        - role
+    Employees:
+      type: object
+      description: Создание, получение и обновление сотрудников компании.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          nullable: true
+          title: ФИО пользователя
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 128
+        phone:
+          type: string
+          nullable: true
+          title: Номер телефона
+          maxLength: 32
+        role:
+          $ref: "#/components/schemas/RoleEnum"
+        registration_link:
+          type: string
+          readOnly: true
+        registration_status:
+          allOf:
+            - $ref: "#/components/schemas/RegistrationStatusEnum"
+          readOnly: true
+          title: Статус регистрации
+      required:
+        - email
+        - id
+        - registration_link
+        - registration_status
+        - role
+    Lesson:
+      type: object
+      description: Сериализатор для уроков.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Название урока
+          maxLength: 128
+        content:
+          type: string
+          title: Лекция
+        ordinal_number:
+          type: integer
+          readOnly: true
+        has_active_progressions:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+            - $ref: "#/components/schemas/LessonStatusEnum"
+          readOnly: true
+        deleted_at:
+          type: string
+          readOnly: true
+        save_as_draft:
+          type: boolean
+          writeOnly: true
+      required:
+        - content
+        - deleted_at
+        - has_active_progressions
+        - id
+        - ordinal_number
+        - status
+        - title
+    LessonStatusEnum:
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - ARCHIVED
+        - DELETED
+      type: string
+      description: |-
+        * `DRAFT` - Черновик
+        * `PUBLISHED` - Опубликован
+        * `ARCHIVED` - В архиве
+        * `DELETED` - Удален
+    OptionAnswer:
+      type: object
+      description: Сериализатор для сущности OptionAnswer.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+          maxLength: 300
+        is_correct:
+          type: boolean
+      required:
+        - id
+        - text
+    PaginatedAnswerList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Answer"
+    PaginatedCompanyBriefList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/CompanyBrief"
+    PaginatedCourseCandidatesListList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseCandidatesList"
+    PaginatedCourseList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+    PaginatedEmployeesList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Employees"
+    PaginatedLessonList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lesson"
+    PaginatedOptionAnswerList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionAnswer"
+    PaginatedQuestionAttemptList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionAttempt"
+    PaginatedQuestionList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+    PaginatedSubscriptionList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subscription"
+    PaginatedTestList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Test"
+    Question:
+      type: object
+      description: Сериализатор для сущности Question.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question_type:
+          $ref: "#/components/schemas/QuestionTypeEnum"
+        question_text:
+          type: string
+          maxLength: 512
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionAnswer"
+          readOnly: true
+      required:
+        - id
+        - options
+        - question_text
+    QuestionAttempt:
+      type: object
+      description: Сериализатор для просмотра вопросов на текущей попытку.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question_text:
+          type: string
+          maxLength: 512
+      required:
+        - id
+        - question_text
+    QuestionTypeEnum:
+      enum:
+        - SINGLE CHOICE
+        - MULTIPLE CHOICE
+        - TEXT ANSWER
+        - FILE
+        - INTEGER
+      type: string
+      description: |-
+        * `SINGLE CHOICE` - Одиночный выбор
+        * `MULTIPLE CHOICE` - Множественный выбор
+        * `TEXT ANSWER` - Текстовый ответ
+        * `FILE` - Загрузка файла
+        * `INTEGER` - ЧИсловой формат
+    RegistrationStatusEnum:
+      enum:
+        - DEFAULT
+        - AWAIT
+        - DONE
+      type: string
+      description: |-
+        * `DEFAULT` - Статус по умолчанию
+        * `AWAIT` - Ожидает регистрации
+        * `DONE` - Зарегистрирован
+    ResetUserPassword:
+      type: object
+      description: Сброс пароля пользователя через email.
+      properties:
+        verification_email:
+          type: string
+          format: email
+          writeOnly: true
+      required:
+        - verification_email
+    RoleEnum:
+      enum:
+        - DEFAULT
+        - CANDIDATE
+        - COMPANY USER
+        - COMPANY ADMIN
+        - SUPER ADMIN
+      type: string
+      description: |-
+        * `DEFAULT` - Роль по умолчанию
+        * `CANDIDATE` - Кандидат
+        * `COMPANY USER` - Пользователь компании
+        * `COMPANY ADMIN` - Администратор компании
+        * `SUPER ADMIN` - Суперадминистратор
+    SetUserPassword:
+      type: object
+      description: Получение полей пользователя и смена его пароля по ссылке.
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Адрес электронной почты
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 64
+          minLength: 8
+        repeat_password:
+          type: string
+          writeOnly: true
+      required:
+        - email
+        - password
+        - repeat_password
+    Status01aEnum:
+      enum:
+        - NEW
+        - VIEWED
+        - ACCEPTED
+        - REJECTED
+      type: string
+      description: |-
+        * `NEW` - Новый
+        * `VIEWED` - Просмотрено
+        * `ACCEPTED` - Приглашение
+        * `REJECTED` - Отклонен
+    Subscription:
+      type: object
+      description: Класс сериализатора для подписок компаний.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          title: Дата начала подписки
+        end_date:
+          type: string
+          format: date
+          title: Дата окончания подписки
+      required:
+        - end_date
+        - id
+        - start_date
+        - status
+    Test:
+      type: object
+      description: Сериализатор для сущности Теста.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+          readOnly: true
+      required:
+        - id
+        - questions
+    TestAttempt:
+      type: object
+      description: Сериализатор для сущности TestAttempt.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        passed:
+          type: boolean
+          readOnly: true
+          nullable: true
+        score:
+          type: integer
+          readOnly: true
+        max_score:
+          type: integer
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+        - completed_at
+        - id
+        - max_score
+        - passed
+        - score
+        - started_at
+    TokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+        - access
+        - email
+        - password
+        - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+        - access
+        - refresh
+    TokenVerify:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+        - token
+    UserRetrieveUpdate:
+      type: object
+      description: Получение полей пользователя из своей записи и их редактирование.
+      properties:
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 128
+        name:
+          type: string
+          nullable: true
+          title: ФИО пользователя
+          maxLength: 128
+        phone:
+          type: string
+          nullable: true
+          title: Номер телефона
+          maxLength: 32
+        resume:
+          type: string
+          format: uri
+        role:
+          allOf:
+            - $ref: "#/components/schemas/RoleEnum"
+          readOnly: true
+          title: Роль пользователя
+      required:
+        - email
+        - role
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

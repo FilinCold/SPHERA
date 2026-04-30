@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   DEFAULT_TITLE_BAR_CONFIG,
@@ -29,6 +29,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
 }) => {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
+  const debounceTimerRef = useRef<number | null>(null);
   const routeConfig = TITLE_BAR_CONFIG_BY_ROUTE[pathname] ?? DEFAULT_TITLE_BAR_CONFIG;
   const resolvedTitle = title ?? routeConfig.title;
   const resolvedSearchPlaceholder = searchPlaceholder ?? routeConfig.searchPlaceholder;
@@ -38,14 +39,31 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   const useButtonAction = Boolean(onCreateClick) || !resolvedActionHref;
 
   const handleSearch = () => {
-    if (!query.trim()) {
-      alert("Введите текст для поиска");
+    if (debounceTimerRef.current !== null) {
+      window.clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
 
+    onSearch?.(query.trim());
+  };
+
+  useEffect(() => {
+    if (!onSearch) {
       return;
     }
 
-    onSearch?.(query);
-  };
+    debounceTimerRef.current = window.setTimeout(() => {
+      onSearch(query.trim());
+      debounceTimerRef.current = null;
+    }, 400);
+
+    return () => {
+      if (debounceTimerRef.current !== null) {
+        window.clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+    };
+  }, [query, onSearch]);
 
   const safeBreadcrumbs =
     breadcrumbs && breadcrumbs.length > 0 ? breadcrumbs : routeConfig.breadcrumbs;
@@ -82,7 +100,12 @@ export const TitleBar: React.FC<TitleBarProps> = ({
                   if (e.key === "Enter") handleSearch();
                 }}
               />
-              <span className={styles.icon}>
+              <button
+                type="button"
+                className={styles.icon}
+                aria-label="Запустить поиск"
+                onClick={handleSearch}
+              >
                 <svg
                   width="20"
                   height="20"
@@ -98,7 +121,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
                     strokeLinejoin="round"
                   />
                 </svg>
-              </span>
+              </button>
             </div>
 
             {!shouldHideActionButton &&

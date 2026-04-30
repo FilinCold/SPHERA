@@ -22,6 +22,9 @@ const CompanyCard = ({
     companySlug != null && companySlug !== ""
       ? `${PAGES.STATISTICS}?slug=${encodeURIComponent(companySlug)}`
       : PAGES.STATISTICS;
+  const hasActiveSubscriptionDate =
+    status === "active" && Boolean(subscriptionDate) && subscriptionDate !== "—";
+  const subscriptionDateText = hasActiveSubscriptionDate ? `- ${subscriptionDate}` : "-";
 
   return (
     <div className={styles.card}>
@@ -43,7 +46,7 @@ const CompanyCard = ({
         <div className={styles.card__metaActions}>
           <div className={styles.card__info}>
             <span className={styles.card__label}>Подписка до:</span>
-            <span className={styles.card__date}>{subscriptionDate || "—"}</span>
+            <span className={styles.card__date}>{subscriptionDateText}</span>
           </div>
 
           <div className={styles.card__actions}>

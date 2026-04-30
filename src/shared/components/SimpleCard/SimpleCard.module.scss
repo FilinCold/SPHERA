@@ -9,7 +9,10 @@
   margin: 82px 0 171px 0;
 }
 .cardEmbedded {
+  margin: 0;
+  max-width: none;
   overflow: visible;
+  width: 100%;
 }
 
 .header {

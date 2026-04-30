@@ -25,8 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   getPublicEnv();
 
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
           <Header />
           {children}
