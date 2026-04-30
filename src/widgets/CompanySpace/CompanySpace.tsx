@@ -1,7 +1,7 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 import CompanyCard from "@/shared/components/CompanyCard/CompanyCard";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
@@ -28,7 +28,7 @@ const CompanySpaceComponent = () => {
   const { companyStore } = useStores();
 
   useEffect(() => {
-    void companyStore.loadCompaniesList(0);
+    void companyStore.loadCompaniesList(0, companyStore.companiesSearchQuery);
   }, [companyStore]);
 
   const {
@@ -46,10 +46,16 @@ const CompanySpaceComponent = () => {
     companiesTotalPages > 1
       ? getCompanySpacePaginationItems(companiesPageDisplay, companiesTotalPages)
       : [];
+  const handleSearch = useCallback(
+    (query: string) => {
+      void companyStore.searchCompanies(query);
+    },
+    [companyStore],
+  );
 
   return (
     <main className={styles.page}>
-      <TitleBar />
+      <TitleBar onSearch={handleSearch} />
 
       <section className={styles.content}>
         {isCompaniesListLoading ? (
@@ -65,7 +71,7 @@ const CompanySpaceComponent = () => {
                 <CompanyCard
                   key={company.id}
                   href={PAGES.EDIT_SPACE}
-                  companySlug={company.id}
+                  companySlug={company.slug ?? company.id}
                   name={company.name}
                   subscriptionDate={company.subscriptionDate}
                   status={company.status}

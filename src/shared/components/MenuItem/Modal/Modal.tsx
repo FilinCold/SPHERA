@@ -10,7 +10,9 @@ import styles from "./Modal.module.scss";
 import type { ModalProps } from "./types";
 
 export const Modal = (props: ModalProps) => {
-  const { children, className, hideCloseButton = false, isOpen, onClose } = props;
+  const { children, className, hideCloseButton = false, isOpen, onClose, showCloseButton } = props;
+  const shouldShowCloseButton =
+    typeof showCloseButton === "boolean" ? showCloseButton : !hideCloseButton;
   const modalContentClassName = clsx(styles.modalContent, className);
 
   useEffect(() => {
@@ -41,12 +43,11 @@ export const Modal = (props: ModalProps) => {
 
       <div className={styles.modalContainer}>
         <div className={modalContentClassName}>
-          {!hideCloseButton ? (
+          {shouldShowCloseButton ? (
             <button type="button" className={styles.closeButton} onClick={onClose}>
               <Image src={crossIcon} alt="Закрыть модальное окно" width={26} height={26} />
             </button>
           ) : null}
-
           {children}
         </div>
       </div>

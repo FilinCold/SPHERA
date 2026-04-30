@@ -7,8 +7,11 @@ export interface CompanyInfoModel {
 /** Элемент списка пространств для UI (company-space). */
 export type CompanyListItem = {
   id: string;
+  slug?: string;
   name: string;
   description?: string;
+  /** id активной подписки, если вернулся в actual_subscriptions. */
+  activeSubscriptionId?: string;
   /** Уже отформатировано для карточки (например ДД.ММ.ГГГГ). */
   subscriptionDate: string;
   status: "active" | "inactive";
@@ -24,8 +27,12 @@ export type CompaniesListResult = {
   totalCount: number;
 };
 
-/** Ответ POST `/api/v1/companies/` — уточняется по контракту бэкенда. */
-export type CreateCompanyResponse = Record<string, unknown>;
+/** Ответ POST `/api/v1/companies/` — для дальнейших зависимых запросов нужен slug компании. */
+export type CreateCompanyResponse = {
+  slug?: string | null;
+  id?: string | number;
+  name?: string;
+};
 
 export type UpdateCompanyPayload = {
   name: string;
@@ -36,10 +43,50 @@ export type UpdateCompanyPayload = {
 export type CreateCompanySubscriptionPayload = {
   start_date: string;
   end_date: string;
+  status?: "ACTIVE" | "SUSPENDED";
+};
+
+export type UpdateCompanySubscriptionPayload = {
+  start_date: string;
+  end_date: string;
+  status?: "ACTIVE" | "SUSPENDED";
+};
+
+/** POST `/api/v1/companies/{slug}/employees/` */
+export type CreateCompanyEmployeePayload = {
+  name: string;
+  email: string;
+  role: "COMPANY ADMIN";
+};
+
+export type UpdateCompanyEmployeePayload = {
+  name: string;
+  email: string;
+  role: "COMPANY ADMIN";
 };
 
 export type SaveCompanyEditInput = {
   slug: string;
   companyPatch?: UpdateCompanyPayload;
   subscriptionPost?: CreateCompanySubscriptionPayload;
+  subscriptionPatch?: {
+    id: string;
+    payload: UpdateCompanySubscriptionPayload;
+  };
+  adminInvitePost?: CreateCompanyEmployeePayload;
+};
+
+export type CompanyEmployeeItem = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+export type CreateSpaceSetupInput = {
+  name: string;
+  adminFullName: string;
+  adminEmail: string;
+  subscriptionStartDate: string;
+  subscriptionEndDate: string;
 };

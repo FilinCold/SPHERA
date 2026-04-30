@@ -9,6 +9,8 @@ export type InputField = {
   label: string;
   placeholder?: string;
   type?: FieldType;
+  /** Регулярка для нативной валидации `<input pattern="">`. */
+  pattern?: string;
   /** Показать ошибку «Заполните поле», если после blur значение пустое. */
   required?: boolean;
   options?: { label: string; value: string }[]; // для select

@@ -103,5 +103,5 @@ export default defineConfig([
       ],
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".husky/**"]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".husky/**", "cursor/**"]),
 ]);

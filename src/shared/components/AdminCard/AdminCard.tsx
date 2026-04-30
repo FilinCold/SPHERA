@@ -63,11 +63,13 @@ export const AdminCard = ({
 
   return (
     <div className={clsx(styles.card, className)}>
-      <div className={styles.header}>{title}</div>
+      <div className={styles.header} data-slot="header">
+        {title}
+      </div>
 
-      <div className={clsx(styles.body, singleColumn && styles.bodySingleColumn)}>
+      <div className={clsx(styles.body, singleColumn && styles.bodySingleColumn)} data-slot="body">
         {fields.map((field) => (
-          <div key={field.name} className={styles.field}>
+          <div key={field.name} className={styles.field} data-slot="field">
             <label>
               {field.label}
               {field.required && "*"}

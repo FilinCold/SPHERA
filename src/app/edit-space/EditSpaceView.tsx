@@ -1,13 +1,17 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { ruDateToIsoDate } from "@/domains/Company/lib/ru-date-to-iso";
-import type { CreateCompanySubscriptionPayload } from "@/domains/Company/model/company-model";
-import { AdminCard } from "@/shared/components/AdminCard/AdminCard";
-import type { AdminField } from "@/shared/components/AdminCard/types";
+import type {
+  CreateCompanySubscriptionPayload,
+  SaveCompanyEditInput,
+  UpdateCompanySubscriptionPayload,
+} from "@/domains/Company/model/company-model";
+import { Modal } from "@/shared/components/MenuItem/Modal";
 import { SimpleCard } from "@/shared/components/SimpleCard/SimpleCard";
 import type { FormData, InputField } from "@/shared/components/SimpleCard/types";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
@@ -18,23 +22,9 @@ import {
 import { PAGES } from "@/shared/config/pages.config";
 import { useStores } from "@/shared/store";
 
+import deleteIcon from "./icon/delete.svg";
+import editIcon from "./icon/edit.svg";
 import styles from "./page.module.scss";
-
-const adminFields: AdminField[] = [
-  {
-    name: "fio",
-    label: "ФИО",
-    placeholder: "Введите фамилию имя отчество",
-    required: true,
-  },
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    placeholder: "Введите почту",
-    required: true,
-  },
-];
 
 const requestFields: InputField[] = [
   {
@@ -45,14 +35,8 @@ const requestFields: InputField[] = [
   },
   {
     name: "subscriptionStatus",
-    label: "Статус подписки",
-    type: "select",
-    required: true,
-    skipEmptySelectOption: true,
-    options: [
-      { label: "Активно", value: "active" },
-      { label: "Приостановлено", value: "inactive" },
-    ],
+    label: "Статус подписки:",
+    type: "readonly",
   },
   {
     name: "subscriptionDateRange",
@@ -67,8 +51,6 @@ type EditSpaceSnapshot = {
   subscriptionStatus: string;
   subscriptionDateRangeStart: string;
   subscriptionDateRangeEnd: string;
-  fio: string;
-  email: string;
 };
 
 type KeyedState<T> = {
@@ -77,9 +59,13 @@ type KeyedState<T> = {
 };
 
 const normalizeString = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
+const SIMPLE_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const mapUiStatusToApiStatus = (status: string): "ACTIVE" | "SUSPENDED" =>
+  status === "inactive" ? "SUSPENDED" : "ACTIVE";
+const formatSubscriptionStatus = (status: string): string =>
+  status === "inactive" ? "Приостановлено" : "Активно";
 
 function EditSpaceViewComponent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const companySlug = searchParams.get("slug") ?? searchParams.get("companyId");
   const { companyStore } = useStores();
@@ -101,6 +87,7 @@ function EditSpaceViewComponent() {
   useEffect(() => {
     if (companySlug) {
       void companyStore.loadCompanyForEdit(companySlug);
+      void companyStore.loadCompanyAdmins(companySlug);
     } else {
       companyStore.clearCompanyForEdit();
     }
@@ -110,7 +97,41 @@ function EditSpaceViewComponent() {
     };
   }, [companySlug, companyStore]);
 
-  const { companyForEdit, isCompanyForEditLoading, companyForEditError } = companyStore;
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextSlug = companyStore.companyForEdit?.slug?.trim();
+
+    if (!nextSlug) {
+      return;
+    }
+
+    const currentUrl = new URL(window.location.href);
+    const currentSlug = currentUrl.searchParams.get("slug");
+
+    // Если slug изменился после переименования, обновляем URL без перезагрузки страницы.
+    if (!currentSlug || currentSlug === nextSlug) {
+      return;
+    }
+
+    currentUrl.searchParams.set("slug", nextSlug);
+    window.history.replaceState(
+      {},
+      "",
+      `${currentUrl.pathname}?${currentUrl.searchParams.toString()}`,
+    );
+  }, [companyStore.companyForEdit?.slug]);
+
+  const {
+    companyForEdit,
+    isCompanyForEditLoading,
+    companyForEditError,
+    companyAdmins,
+    isCompanyAdminsLoading,
+    companyAdminsError,
+  } = companyStore;
 
   const cardsKey = useMemo(() => {
     if (companySlug && companyForEdit) {
@@ -132,17 +153,6 @@ function EditSpaceViewComponent() {
     return handoff?.spaceName?.trim() || "Пространство";
   }, [companyForEdit, handoff]);
 
-  const adminInitial = useMemo((): Record<string, string> | undefined => {
-    if (!handoff) {
-      return undefined;
-    }
-
-    return {
-      fio: handoff.fio,
-      email: handoff.email,
-    };
-  }, [handoff]);
-
   const requestInitial = useMemo((): Partial<FormData> => {
     if (companySlug && companyForEdit) {
       const c = companyForEdit;
@@ -152,14 +162,14 @@ function EditSpaceViewComponent() {
 
       return {
         spaceName: c.name.trim(),
-        subscriptionStatus: c.status,
+        subscriptionStatus: formatSubscriptionStatus(c.status),
         subscriptionDateRangeStart: startRaw,
         subscriptionDateRangeEnd: endRaw,
       };
     }
 
     const base: Partial<FormData> = {
-      subscriptionStatus: "active",
+      subscriptionStatus: "Активно",
     };
 
     if (!handoff) {
@@ -178,74 +188,64 @@ function EditSpaceViewComponent() {
     key: cardsKey,
     data: requestInitial,
   }));
-  const [adminState, setAdminState] = useState<KeyedState<Record<string, string>>>(() => ({
-    key: cardsKey,
-    data: adminInitial ?? {},
-  }));
-  const saveHintContextKey = `${companySlug ?? "new"}:${companyForEdit?.id ?? "none"}`;
-  const [saveHintState, setSaveHintState] = useState<{ key: string; message: string | null }>(
-    () => ({
-      key: saveHintContextKey,
-      message: null,
-    }),
-  );
+  const [isCreateAdminModalOpen, setIsCreateAdminModalOpen] = useState(false);
+  const [adminToEditId, setAdminToEditId] = useState<string | null>(null);
+  const [adminToDeleteId, setAdminToDeleteId] = useState<string | null>(null);
+  const [newAdminName, setNewAdminName] = useState("");
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminTouched, setNewAdminTouched] = useState<{ name: boolean; email: boolean }>({
+    name: false,
+    email: false,
+  });
+  const [createAdminError, setCreateAdminError] = useState<string | null>(null);
+  const [editAdminError, setEditAdminError] = useState<string | null>(null);
+  const [deleteAdminError, setDeleteAdminError] = useState<string | null>(null);
+  const [isCreateAdminSubmitting, setIsCreateAdminSubmitting] = useState(false);
+  const [isEditAdminSubmitting, setIsEditAdminSubmitting] = useState(false);
+  const [isDeleteAdminSubmitting, setIsDeleteAdminSubmitting] = useState(false);
 
   const requestCurrent = useMemo(
     () => (requestState.key === cardsKey ? requestState.data : requestInitial),
     [requestState, cardsKey, requestInitial],
   );
-  const adminCurrent = useMemo(
-    () => (adminState.key === cardsKey ? adminState.data : (adminInitial ?? {})),
-    [adminState, cardsKey, adminInitial],
-  );
-  const saveHint = saveHintState.key === saveHintContextKey ? saveHintState.message : null;
-
-  const setScopedSaveHint = (message: string | null) => {
-    setSaveHintState({ key: saveHintContextKey, message });
-  };
 
   const initialSnapshot = useMemo<EditSpaceSnapshot>(() => {
     const request = requestInitial;
-    const admin = adminInitial ?? {};
 
     return {
       spaceName: normalizeString(request.spaceName),
       subscriptionStatus: normalizeString(request.subscriptionStatus),
       subscriptionDateRangeStart: normalizeString(request.subscriptionDateRangeStart),
       subscriptionDateRangeEnd: normalizeString(request.subscriptionDateRangeEnd),
-      fio: normalizeString(admin.fio),
-      email: normalizeString(admin.email),
     };
-  }, [requestInitial, adminInitial]);
+  }, [requestInitial]);
 
   const currentSnapshot = useMemo<EditSpaceSnapshot>(() => {
     const request = { ...requestInitial, ...requestCurrent };
-    const admin = { ...(adminInitial ?? {}), ...adminCurrent };
 
     return {
       spaceName: normalizeString(request.spaceName),
       subscriptionStatus: normalizeString(request.subscriptionStatus),
       subscriptionDateRangeStart: normalizeString(request.subscriptionDateRangeStart),
       subscriptionDateRangeEnd: normalizeString(request.subscriptionDateRangeEnd),
-      fio: normalizeString(admin.fio),
-      email: normalizeString(admin.email),
     };
-  }, [requestInitial, requestCurrent, adminInitial, adminCurrent]);
+  }, [requestInitial, requestCurrent]);
 
-  const hasChanges =
-    currentSnapshot.spaceName !== initialSnapshot.spaceName ||
-    currentSnapshot.subscriptionStatus !== initialSnapshot.subscriptionStatus ||
-    currentSnapshot.subscriptionDateRangeStart !== initialSnapshot.subscriptionDateRangeStart ||
-    currentSnapshot.subscriptionDateRangeEnd !== initialSnapshot.subscriptionDateRangeEnd ||
-    currentSnapshot.fio !== initialSnapshot.fio ||
-    currentSnapshot.email !== initialSnapshot.email;
-
-  const isSaveDisabled =
-    !hasChanges || isCompanyForEditLoading || companyStore.isCompanyForEditSaving || !companySlug;
-
-  const handleToolbarCancel = () => {
-    router.push(PAGES.COMPANY_SPACE);
-  };
+  const nameChanged = currentSnapshot.spaceName !== initialSnapshot.spaceName;
+  const statusChanged = currentSnapshot.subscriptionStatus !== initialSnapshot.subscriptionStatus;
+  const initialStartIso = ruDateToIsoDate(initialSnapshot.subscriptionDateRangeStart) ?? "";
+  const initialEndIso = ruDateToIsoDate(initialSnapshot.subscriptionDateRangeEnd) ?? "";
+  const currentStartIso = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeStart) ?? "";
+  const currentEndIso = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeEnd) ?? "";
+  const subscriptionDatesChanged =
+    currentStartIso !== initialStartIso || currentEndIso !== initialEndIso;
+  const requestColumnChanged = nameChanged || statusChanged || subscriptionDatesChanged;
+  const hasPersistableChanges = requestColumnChanged;
+  const isRequestSaveDisabled =
+    !hasPersistableChanges ||
+    isCompanyForEditLoading ||
+    companyStore.isCompanyForEditSaving ||
+    !companySlug;
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -255,57 +255,255 @@ function EditSpaceViewComponent() {
       return;
     }
 
-    if (!companySlug || !companyForEdit || !hasChanges) {
+    if (!companySlug || !companyForEdit || !hasPersistableChanges) {
       return;
     }
 
-    setScopedSaveHint(null);
-
-    const initialStartIso = ruDateToIsoDate(initialSnapshot.subscriptionDateRangeStart) ?? "";
-    const initialEndIso = ruDateToIsoDate(initialSnapshot.subscriptionDateRangeEnd) ?? "";
-    const currentStartIso = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeStart) ?? "";
-    const currentEndIso = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeEnd) ?? "";
-    const datesChanged = currentStartIso !== initialStartIso || currentEndIso !== initialEndIso;
-
     let subscriptionPost: CreateCompanySubscriptionPayload | undefined;
+    let subscriptionPatch:
+      | {
+          id: string;
+          payload: UpdateCompanySubscriptionPayload;
+        }
+      | undefined;
 
-    if (datesChanged) {
+    if (subscriptionDatesChanged || statusChanged) {
       const startDate = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeStart);
       const endDate = ruDateToIsoDate(currentSnapshot.subscriptionDateRangeEnd);
 
       if (!startDate || !endDate) {
-        setScopedSaveHint("Укажите даты подписки в формате ДД.ММ.ГГГГ");
-
         return;
       }
 
-      /** POST `/api/v1/companies/{slug}/subscriptions/` — только дата, без времени. */
-      subscriptionPost = { start_date: startDate, end_date: endDate };
+      const subscriptionPayload: UpdateCompanySubscriptionPayload = {
+        start_date: startDate,
+        end_date: endDate,
+        ...(statusChanged
+          ? { status: mapUiStatusToApiStatus(currentSnapshot.subscriptionStatus) }
+          : {}),
+      };
+
+      const activeSubscriptionId = companyForEdit.activeSubscriptionId?.trim();
+
+      if (activeSubscriptionId) {
+        subscriptionPatch = {
+          id: activeSubscriptionId,
+          payload: subscriptionPayload,
+        };
+      } else {
+        /** Fallback: если активной подписки нет, создаём новую запись подписки. */
+        subscriptionPost = {
+          start_date: subscriptionPayload.start_date,
+          end_date: subscriptionPayload.end_date,
+          ...(subscriptionPayload.status ? { status: subscriptionPayload.status } : {}),
+        };
+      }
     }
 
-    const nameChanged = currentSnapshot.spaceName !== initialSnapshot.spaceName;
-
-    if (!nameChanged && !subscriptionPost) {
-      setScopedSaveHint("На сервер сохраняются имя пространства и период подписки");
-
+    if (!nameChanged && !statusChanged && !subscriptionPost && !subscriptionPatch) {
       return;
     }
 
-    const ok = await companyStore.saveEditSpace({
+    const payload: SaveCompanyEditInput = {
       slug: companySlug,
       ...(nameChanged
         ? {
             companyPatch: {
               name: currentSnapshot.spaceName,
-              description: companyForEdit.description ?? "",
+              // Backend валидирует description как непустое поле, поэтому используем технический fallback.
+              description: companyForEdit.description ?? "1",
             },
           }
         : {}),
+      ...(subscriptionPatch ? { subscriptionPatch } : {}),
       ...(subscriptionPost ? { subscriptionPost } : {}),
-    });
+    };
 
-    if (!ok && !companyStore.companyForEditError) {
-      setScopedSaveHint("Не удалось сохранить изменения");
+    await companyStore.saveEditSpace(payload);
+  };
+
+  const openCreateAdminModal = () => {
+    setCreateAdminError(null);
+    setNewAdminName("");
+    setNewAdminEmail("");
+    setNewAdminTouched({ name: false, email: false });
+    setIsCreateAdminModalOpen(true);
+  };
+
+  const closeCreateAdminModal = () => {
+    if (isCreateAdminSubmitting) {
+      return;
+    }
+
+    setIsCreateAdminModalOpen(false);
+    setCreateAdminError(null);
+    setNewAdminTouched({ name: false, email: false });
+  };
+
+  const adminToEdit = useMemo(
+    () => companyAdmins.find((admin) => admin.id === adminToEditId) ?? null,
+    [companyAdmins, adminToEditId],
+  );
+  const adminToDelete = useMemo(
+    () => companyAdmins.find((admin) => admin.id === adminToDeleteId) ?? null,
+    [companyAdmins, adminToDeleteId],
+  );
+
+  const normalizedAdminName = newAdminName.trim();
+  const normalizedAdminEmail = newAdminEmail.trim();
+  const isAdminNameValid = normalizedAdminName.length > 0;
+  const isAdminEmailFilled = normalizedAdminEmail.length > 0;
+  const isAdminEmailFormatValid = SIMPLE_EMAIL_RE.test(normalizedAdminEmail);
+  const isCreateAdminFormValid = isAdminNameValid && isAdminEmailFilled && isAdminEmailFormatValid;
+  const isEditAdminFormChanged =
+    normalizedAdminName !== (adminToEdit?.name.trim() ?? "") ||
+    normalizedAdminEmail !== (adminToEdit?.email.trim() ?? "");
+  const isEditAdminFormValid = isCreateAdminFormValid && isEditAdminFormChanged;
+  const nameFieldError = !isAdminNameValid ? "Поле ФИО обязательно" : "";
+  const emailFieldError = !isAdminEmailFilled
+    ? "Поле Email обязательно"
+    : !isAdminEmailFormatValid
+      ? "Введите корректный email"
+      : "";
+
+  const handleCreateAdminSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!companySlug) {
+      setCreateAdminError("Не удалось определить пространство");
+
+      return;
+    }
+
+    setNewAdminTouched({ name: true, email: true });
+    if (!isCreateAdminFormValid) {
+      setCreateAdminError("Проверьте корректность заполнения полей");
+
+      return;
+    }
+
+    const fullName = normalizedAdminName;
+    const email = normalizedAdminEmail;
+
+    setCreateAdminError(null);
+    setIsCreateAdminSubmitting(true);
+
+    try {
+      const ok = await companyStore.inviteAdminToCompany(companySlug, fullName, email);
+
+      if (!ok) {
+        setCreateAdminError(companyStore.companyAdminsError ?? "Не удалось создать администратора");
+
+        return;
+      }
+
+      setIsCreateAdminModalOpen(false);
+      setNewAdminName("");
+      setNewAdminEmail("");
+    } finally {
+      setIsCreateAdminSubmitting(false);
+    }
+  };
+
+  const openEditAdminModal = (adminId: string) => {
+    const admin = companyAdmins.find((item) => item.id === adminId);
+
+    if (!admin) {
+      return;
+    }
+
+    setAdminToEditId(adminId);
+    setNewAdminName(admin.name);
+    setNewAdminEmail(admin.email);
+    setNewAdminTouched({ name: false, email: false });
+    setEditAdminError(null);
+  };
+
+  const closeEditAdminModal = () => {
+    if (isEditAdminSubmitting) {
+      return;
+    }
+
+    setAdminToEditId(null);
+    setNewAdminTouched({ name: false, email: false });
+    setEditAdminError(null);
+  };
+
+  const handleEditAdminSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!companySlug || !adminToEdit) {
+      setEditAdminError("Не удалось определить администратора");
+
+      return;
+    }
+
+    setNewAdminTouched({ name: true, email: true });
+    if (!isEditAdminFormValid) {
+      setEditAdminError(isEditAdminFormChanged ? "Проверьте корректность заполнения полей" : null);
+
+      return;
+    }
+
+    setEditAdminError(null);
+    setIsEditAdminSubmitting(true);
+
+    try {
+      const ok = await companyStore.updateCompanyAdmin(
+        companySlug,
+        adminToEdit.id,
+        normalizedAdminName,
+        normalizedAdminEmail,
+      );
+
+      if (!ok) {
+        setEditAdminError(companyStore.companyAdminsError ?? "Не удалось обновить администратора");
+
+        return;
+      }
+
+      closeEditAdminModal();
+    } finally {
+      setIsEditAdminSubmitting(false);
+    }
+  };
+
+  const openDeleteAdminModal = (adminId: string) => {
+    setAdminToDeleteId(adminId);
+    setDeleteAdminError(null);
+  };
+
+  const closeDeleteAdminModal = () => {
+    if (isDeleteAdminSubmitting) {
+      return;
+    }
+
+    setAdminToDeleteId(null);
+    setDeleteAdminError(null);
+  };
+
+  const handleDeleteAdmin = async () => {
+    if (!companySlug || !adminToDelete) {
+      setDeleteAdminError("Не удалось определить администратора");
+
+      return;
+    }
+
+    setDeleteAdminError(null);
+    setIsDeleteAdminSubmitting(true);
+
+    try {
+      const ok = await companyStore.deleteCompanyAdmin(companySlug, adminToDelete.id);
+
+      if (!ok) {
+        setDeleteAdminError(companyStore.companyAdminsError ?? "Не удалось удалить администратора");
+
+        return;
+      }
+
+      closeDeleteAdminModal();
+    } finally {
+      setIsDeleteAdminSubmitting(false);
     }
   };
 
@@ -336,56 +534,300 @@ function EditSpaceViewComponent() {
           <p className={styles.errorBanner} role="alert">
             {companyForEditError}
           </p>
-        ) : saveHint ? (
-          <p className={styles.errorBanner} role="alert">
-            {saveHint}
-          </p>
         ) : null}
 
         {(showCompanyForm || showHandoffOrEmptyForm) && (
           <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.grid}>
-              <SimpleCard
-                key={`request-${cardsKey}`}
-                className={styles.requestCard ?? ""}
-                embedded
-                fields={requestFields}
-                headerAlign="center"
-                hideFooter
-                initialValues={requestInitial}
-                onChange={(data) => {
-                  setRequestState({ key: cardsKey, data });
-                }}
-                title="Данные заявки"
-              />
+              <div className={styles.requestColumn}>
+                <SimpleCard
+                  key={`request-${cardsKey}`}
+                  className={styles.requestCard ?? ""}
+                  embedded
+                  fields={requestFields}
+                  headerAlign="center"
+                  hideFooter
+                  initialValues={requestInitial}
+                  onChange={(data) => {
+                    setRequestState({ key: cardsKey, data });
+                  }}
+                  title="Данные заявки"
+                />
+                {companySlug ? (
+                  <div className={styles.requestActions}>
+                    <button
+                      type="submit"
+                      className={styles.requestSaveBtn}
+                      disabled={isRequestSaveDisabled}
+                    >
+                      {companyStore.isCompanyForEditSaving ? "Сохранение..." : "Сохранить"}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
 
               <div className={styles.adminColumn}>
-                <AdminCard
-                  key={`admin-${cardsKey}`}
-                  className={styles.adminCard ?? ""}
-                  fields={adminFields}
-                  hideFooter
-                  singleColumn
-                  onChange={(data) => {
-                    setAdminState({ key: cardsKey, data });
-                  }}
-                  {...(adminInitial !== undefined ? { initialValues: adminInitial } : {})}
-                  title="Данные администратора"
-                />
-
-                <div className={styles.actions}>
-                  <button className={styles.cancelBtn} type="button" onClick={handleToolbarCancel}>
-                    Отмена
-                  </button>
-                  <button className={styles.saveBtn} type="submit" disabled={isSaveDisabled}>
-                    Сохранить
-                  </button>
-                </div>
+                <section className={styles.adminListCard}>
+                  <div className={styles.adminListHeader}>Администраторы</div>
+                  <div className={styles.adminListBody}>
+                    <div className={styles.adminListViewport}>
+                      {isCompanyAdminsLoading ? (
+                        <p className={styles.adminListHint}>Загрузка администраторов…</p>
+                      ) : companyAdminsError ? (
+                        <p className={styles.adminListError} role="alert">
+                          {companyAdminsError}
+                        </p>
+                      ) : companyAdmins.length === 0 ? (
+                        <p className={styles.adminListHint}>
+                          Администраторы пространства не найдены
+                        </p>
+                      ) : (
+                        <ul
+                          className={styles.adminList}
+                          aria-label="Список администраторов пространства"
+                        >
+                          {companyAdmins.map((admin) => (
+                            <li key={admin.id} className={styles.adminListItem}>
+                              <span className={styles.adminName}>{admin.name || admin.email}</span>
+                              <div className={styles.adminActions}>
+                                <button
+                                  type="button"
+                                  className={styles.adminIconButton}
+                                  title="Редактировать администратора"
+                                  aria-label="Редактировать администратора"
+                                  onClick={() => openEditAdminModal(admin.id)}
+                                >
+                                  <Image
+                                    src={editIcon}
+                                    alt=""
+                                    aria-hidden="true"
+                                    width={23}
+                                    height={23}
+                                    className={styles.adminIconImage}
+                                  />
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.adminIconButton}
+                                  title="Удалить администратора"
+                                  aria-label="Удалить администратора"
+                                  onClick={() => openDeleteAdminModal(admin.id)}
+                                >
+                                  <Image
+                                    src={deleteIcon}
+                                    alt=""
+                                    aria-hidden="true"
+                                    width={20}
+                                    height={22}
+                                    className={styles.adminIconImage}
+                                  />
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.addAdminBtn}
+                      onClick={openCreateAdminModal}
+                    >
+                      Добавить администратора
+                    </button>
+                  </div>
+                </section>
               </div>
             </div>
           </form>
         )}
       </main>
+
+      <Modal
+        isOpen={isCreateAdminModalOpen}
+        onClose={closeCreateAdminModal}
+        showCloseButton={false}
+        {...(styles.createAdminModalHost ? { className: styles.createAdminModalHost } : {})}
+      >
+        <form className={styles.createAdminModal} onSubmit={handleCreateAdminSubmit}>
+          <div className={styles.createAdminHeader}>
+            <h2 className={styles.createAdminTitle}>Добавить администратора</h2>
+          </div>
+          <div className={styles.createAdminBody}>
+            <div className={styles.createAdminFields}>
+              <label className={styles.createAdminField}>
+                <span>ФИО*</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="Введите фамилию имя отчество"
+                  value={newAdminName}
+                  onChange={(event) => setNewAdminName(event.target.value)}
+                  onBlur={() => setNewAdminTouched((prev) => ({ ...prev, name: true }))}
+                />
+                {newAdminTouched.name && nameFieldError ? (
+                  <span className={styles.createAdminFieldError}>{nameFieldError}</span>
+                ) : null}
+              </label>
+
+              <label className={styles.createAdminField}>
+                <span>Email*</span>
+                <input
+                  type="email"
+                  required
+                  placeholder="Введите почту"
+                  value={newAdminEmail}
+                  onChange={(event) => setNewAdminEmail(event.target.value)}
+                  onBlur={() => setNewAdminTouched((prev) => ({ ...prev, email: true }))}
+                />
+                {newAdminTouched.email && emailFieldError ? (
+                  <span className={styles.createAdminFieldError}>{emailFieldError}</span>
+                ) : null}
+              </label>
+            </div>
+
+            {createAdminError ? (
+              <p className={styles.createAdminError} role="alert">
+                {createAdminError}
+              </p>
+            ) : null}
+
+            <div className={styles.createAdminActions}>
+              <button
+                type="button"
+                className={styles.createAdminCancel}
+                onClick={closeCreateAdminModal}
+                disabled={isCreateAdminSubmitting}
+              >
+                Отмена
+              </button>
+              <button
+                type="submit"
+                className={styles.createAdminSubmit}
+                disabled={isCreateAdminSubmitting || !isCreateAdminFormValid}
+              >
+                {isCreateAdminSubmitting ? "Сохранение..." : "Сохранить"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(adminToEdit)}
+        onClose={closeEditAdminModal}
+        showCloseButton={false}
+        {...(styles.createAdminModalHost ? { className: styles.createAdminModalHost } : {})}
+      >
+        <form className={styles.createAdminModal} onSubmit={handleEditAdminSubmit}>
+          <div className={styles.createAdminHeader}>
+            <h2 className={styles.createAdminTitle}>Редактирование данных администратора</h2>
+          </div>
+          <div className={styles.createAdminBody}>
+            <div className={styles.createAdminFields}>
+              <label className={styles.createAdminField}>
+                <span>ФИО*</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="Введите фамилию имя отчество"
+                  value={newAdminName}
+                  onChange={(event) => setNewAdminName(event.target.value)}
+                  onBlur={() => setNewAdminTouched((prev) => ({ ...prev, name: true }))}
+                />
+                {newAdminTouched.name && nameFieldError ? (
+                  <span className={styles.createAdminFieldError}>{nameFieldError}</span>
+                ) : null}
+              </label>
+
+              <label className={styles.createAdminField}>
+                <span>Email*</span>
+                <input
+                  type="email"
+                  required
+                  placeholder="Введите почту"
+                  value={newAdminEmail}
+                  onChange={(event) => setNewAdminEmail(event.target.value)}
+                  onBlur={() => setNewAdminTouched((prev) => ({ ...prev, email: true }))}
+                />
+                {newAdminTouched.email && emailFieldError ? (
+                  <span className={styles.createAdminFieldError}>{emailFieldError}</span>
+                ) : null}
+              </label>
+            </div>
+
+            {editAdminError ? (
+              <p className={styles.createAdminError} role="alert">
+                {editAdminError}
+              </p>
+            ) : null}
+
+            <div className={styles.createAdminActions}>
+              <button
+                type="button"
+                className={styles.createAdminCancel}
+                onClick={closeEditAdminModal}
+                disabled={isEditAdminSubmitting}
+              >
+                Отмена
+              </button>
+              <button
+                type="submit"
+                className={styles.createAdminSubmit}
+                disabled={isEditAdminSubmitting || !isEditAdminFormValid}
+              >
+                {isEditAdminSubmitting ? "Сохранение..." : "Сохранить"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(adminToDelete)}
+        onClose={closeDeleteAdminModal}
+        showCloseButton={false}
+        {...(styles.createAdminModalHost ? { className: styles.createAdminModalHost } : {})}
+      >
+        <div className={styles.deleteAdminModal}>
+          <div className={styles.deleteAdminHeader}>
+            <h2 className={styles.createAdminTitle}>Удаление администратора</h2>
+          </div>
+          <div className={styles.deleteAdminBody}>
+            <p className={styles.deleteAdminText}>
+              Вы уверены, что хотите удалить?
+              <span className={styles.deleteAdminName}>
+                {adminToDelete?.name || adminToDelete?.email}
+              </span>
+            </p>
+
+            {deleteAdminError ? (
+              <p className={styles.createAdminError} role="alert">
+                {deleteAdminError}
+              </p>
+            ) : null}
+
+            <div className={styles.createAdminActions}>
+              <button
+                type="button"
+                className={styles.createAdminCancel}
+                onClick={closeDeleteAdminModal}
+                disabled={isDeleteAdminSubmitting}
+              >
+                Отмена
+              </button>
+              <button
+                type="button"
+                className={styles.createAdminSubmit}
+                onClick={() => void handleDeleteAdmin()}
+                disabled={isDeleteAdminSubmitting}
+              >
+                {isDeleteAdminSubmitting ? "Удаление..." : "Удалить"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       <footer className={styles.footer}>Сделано в SFERA</footer>
     </div>

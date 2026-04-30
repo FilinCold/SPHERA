@@ -90,6 +90,12 @@
 }
 
 .icon {
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
   position: absolute;
   right: 10px;
   top: 50%;
