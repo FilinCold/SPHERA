@@ -2,6 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import styles from "./CourseCard.module.scss";
@@ -11,6 +12,7 @@ import type { CourseCardProps } from "./types";
 
 export const CourseCard = observer(
   ({ title, description, image, status, usersCount, date, link, users = [] }: CourseCardProps) => {
+    const router = useRouter();
     const [store] = useState(() => new CourseCardStore(users));
 
     useEffect(() => {
@@ -35,7 +37,17 @@ export const CourseCard = observer(
   */
 
     const handleOpenCourse = () => {
-      window.location.href = link || "#";
+      if (!link) {
+        return;
+      }
+
+      if (link.startsWith("/")) {
+        router.push(link);
+
+        return;
+      }
+
+      window.location.href = link;
     };
 
     const handleCopy = async () => {
