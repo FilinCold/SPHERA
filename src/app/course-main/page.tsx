@@ -1,92 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import {
+  loadCourses,
+  saveCourses,
+  type StoredCourse,
+} from "@/domains/Lesson/repositories/courses-storage";
 import { CourseCard } from "@/shared/components/CourseCard/CourseCard";
 import style from "@/shared/components/CourseCard/CourseCard.module.scss";
-import type { CourseCardProps } from "@/shared/components/CourseCard/types";
 import { CoursePopup } from "@/shared/components/CoursePopup/CoursePopup";
 import type { CourseData } from "@/shared/components/CoursePopup/type";
 import TitleBar from "@/shared/components/TitleBar/TitleBar";
+import { Pagination } from "@/widgets/Pagination/Pagination";
 
-type CourseListItem = CourseCardProps & { id: string };
+const ITEMS_PER_PAGE = 4;
 
-const mockUsers = [
-  {
-    id: 1,
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: 2,
-    avatar: "https://i.pravatar.cc/150?img=2",
-  },
-  {
-    id: 3,
-    avatar: "https://i.pravatar.cc/150?img=3",
-  },
-];
-
-const initialCourses: CourseListItem[] = Array.from({ length: 4 }, (_, index) => ({
-  id: `course-${index + 1}`,
-  title: "Супер курс",
-  description: "Lorem ipsum dolor sit amet...",
-  image: "https://picsum.photos/403/300",
-  status: "active" as const,
-  usersCount: 89,
-  date: "20.02.2026",
-  link: "#",
-  users: mockUsers,
-}));
-
-export default function CourseMainPage() {
+export function CourseMainPage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [courses, setCourses] = useState<CourseListItem[]>(() => {
-    if (typeof window !== "undefined") {
-      const savedCourses = localStorage.getItem("courses");
+  const [courses, setCourses] = useState<StoredCourse[]>(loadCourses);
+  const [currentPage, setCurrentPage] = useState(1);
 
-      if (savedCourses) {
-        return JSON.parse(savedCourses);
-      }
-    }
+  const totalPages = Math.ceil(courses.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentCourses = courses.slice(startIndex, endIndex);
 
-    return initialCourses;
-  });
+  useEffect(() => {
+    saveCourses(courses);
+  }, [courses]);
 
   const handleCreateCourse = () => {
     setIsPopupOpen(true);
   };
 
   const handleSaveCourse = (courseData: CourseData) => {
-    const newCourse: CourseListItem = {
-      id: `course-${Date.now()}`,
+    const id = `course-${Date.now()}`;
+    const newCourse: StoredCourse = {
+      id,
       title: courseData.title,
       description: courseData.description,
       image: courseData.coverImage || "https://picsum.photos/403/300",
-      status: "active" as const,
+      status: "active",
       usersCount: 0,
       date: new Date().toLocaleDateString("ru-RU"),
-      link: "#",
+      link: `/course/${id}`,
       users: [],
+      lessons: [],
+      selectedLessonId: null,
     };
 
-    const updatedCourses = [newCourse, ...courses];
-
-    setCourses(updatedCourses);
-    localStorage.setItem("courses", JSON.stringify(updatedCourses));
+    setCourses((prevCourses) => [newCourse, ...prevCourses]);
+    setIsPopupOpen(false);
+    setCurrentPage(1);
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <TitleBar onCreateClick={handleCreateCourse} />
+
       <div className={style.list}>
-        {courses.map(({ id, ...course }) => (
-          <CourseCard key={id} {...course} />
+        {currentCourses.map((course) => (
+          <CourseCard
+            key={course.id}
+            title={course.title}
+            description={course.description}
+            image={course.image}
+            status={course.status}
+            usersCount={course.usersCount}
+            date={course.date}
+            link={course.link}
+            users={course.users}
+          />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       {isPopupOpen && (
         <div className={style.overlay}>
@@ -96,3 +100,5 @@ export default function CourseMainPage() {
     </>
   );
 }
+
+export default CourseMainPage;

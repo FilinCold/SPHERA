@@ -1,9 +1,5 @@
-"use client";
+import { CourseMainPage } from "@/app/course-main/page";
 
-export default function TestPage() {
-  return (
-    <>
-      <h1>Курсы</h1>
-    </>
-  );
+export default function Page() {
+  return <CourseMainPage />;
 }

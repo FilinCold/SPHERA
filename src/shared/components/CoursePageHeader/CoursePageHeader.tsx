@@ -1,11 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import styles from "./CoursePageHeader.module.scss";
 
 import type { CoursePageHeaderProps } from "./types";
 
 export const CoursePageHeader = (props: CoursePageHeaderProps) => {
-  const { courseName, lessonStage } = props;
+  const { courseId, courseName, lessonStage } = props;
+  const router = useRouter();
 
   return (
     <div className={styles.container}>
@@ -13,7 +16,7 @@ export const CoursePageHeader = (props: CoursePageHeaderProps) => {
         type="button"
         className={styles.link}
         onClick={() => {
-          console.log("go to /courses");
+          router.push("/courses");
         }}
       >
         Курсы
@@ -25,7 +28,9 @@ export const CoursePageHeader = (props: CoursePageHeaderProps) => {
         type="button"
         className={styles.link}
         onClick={() => {
-          console.log("go to /course");
+          if (courseId) {
+            router.push(`/course/${courseId}`);
+          }
         }}
       >
         {courseName}
@@ -33,15 +38,7 @@ export const CoursePageHeader = (props: CoursePageHeaderProps) => {
 
       <span className={styles.separator}>|</span>
 
-      <button
-        type="button"
-        className={`${styles.link} ${styles.current}`}
-        onClick={() => {
-          console.log("go to current lesson");
-        }}
-      >
-        {lessonStage}
-      </button>
+      <span className={`${styles.link} ${styles.current}`}>{lessonStage}</span>
     </div>
   );
 };

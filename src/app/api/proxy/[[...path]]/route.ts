@@ -12,6 +12,7 @@ import { getUpstreamBaseUrl } from "@/server/upstream";
 import type { NextRequest } from "next/server";
 
 const BLOCKED_PREFIX = "/api/v1/auth/token";
+const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 const buildUpstreamPath = (pathname: string): string | null => {
   const PROXY_PREFIX = "/api/proxy";
@@ -50,8 +51,14 @@ const forward = async (
 ): Promise<Response> => {
   const base = getUpstreamBaseUrl();
   const incomingUrl = new URL(req.url);
-  const target = `${base}${upstreamPath}${incomingUrl.search}`;
   const method = req.method.toUpperCase();
+  const normalizedUpstreamPath =
+    MUTATION_METHODS.has(method) &&
+    upstreamPath.startsWith("/api/v1/") &&
+    !upstreamPath.endsWith("/")
+      ? `${upstreamPath}/`
+      : upstreamPath;
+  const target = `${base}${normalizedUpstreamPath}${incomingUrl.search}`;
   const hasBody = !["GET", "HEAD"].includes(method);
   const body = hasBody ? await req.arrayBuffer() : undefined;
   const contentType = req.headers.get("content-type");
@@ -79,6 +86,16 @@ const buildClientResponse = async (
   upstreamRes: Response,
   rotated: { access: string; refresh?: string } | null,
 ): Promise<NextResponse> => {
+  if ([204, 205, 304].includes(upstreamRes.status)) {
+    const response = new NextResponse(null, { status: upstreamRes.status });
+
+    if (rotated) {
+      applyAuthCookies(response, rotated);
+    }
+
+    return response;
+  }
+
   const contentType = upstreamRes.headers.get("content-type") ?? "application/json";
   const body = await upstreamRes.text();
   const response = new NextResponse(body, {

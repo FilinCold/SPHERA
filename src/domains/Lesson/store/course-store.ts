@@ -1,14 +1,29 @@
-import { makeAutoObservable, runInAction, autorun } from "mobx";
+import { autorun, makeAutoObservable, runInAction } from "mobx";
 
+import type { UserAvatar } from "@/shared/components/types";
 import type { RootStore } from "@/shared/store/root-store";
 
 import { courseRepository } from "../repositories/course-repository";
+import { getCourseById, updateCourseInStorage } from "../repositories/courses-storage";
 
 import type { Lesson } from "../model/lesson-model";
 
-const STORAGE_KEY = "course-editor";
+const DEFAULT_LESSON_TITLE = "Новый урок";
+
+const cloneLesson = (lesson: Lesson): Lesson => ({
+  ...lesson,
+});
 
 export class CourseStore {
+  private _courseId: string | null = null;
+  private _courseName = "";
+  private _courseDescription = "";
+  private _courseImage = "";
+  private _courseDate = "";
+  private _courseUsersCount = 0;
+  private _courseUsers: UserAvatar[] = [];
+  private _hasCourse = false;
+
   private _lessons: Lesson[] = [];
   private _selectedLessonId: string | null = null;
 
@@ -27,77 +42,98 @@ export class CourseStore {
   constructor(private readonly root: RootStore) {
     makeAutoObservable(this, {}, { autoBind: true });
 
-    this.loadFromStorage();
-
-    const firstLesson = this._lessons[0];
-
-    if (firstLesson) {
-      this.selectLesson(firstLesson.id);
-    }
-
     if (typeof window !== "undefined") {
       autorun(() => {
-        const data = {
-          lessons: this._lessons,
-          selectedLessonId: this._selectedLessonId,
-        };
+        if (!this._courseId || !this._hasCourse) {
+          return;
+        }
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        updateCourseInStorage(this._courseId, (course) => ({
+          ...course,
+          lessons: this._lessons.map(cloneLesson),
+          selectedLessonId: this._selectedLessonId,
+        }));
       });
     }
   }
 
-  private loadFromStorage() {
-    if (typeof window === "undefined") return;
+  private syncSelectedLessonState() {
+    const selected = this.selectedLesson;
 
-    const raw = localStorage.getItem(STORAGE_KEY);
+    this._content = selected?.content ?? "";
+    this._videoUrl = selected?.videoUrl ?? null;
+    this._title = selected?.title ?? "";
+  }
 
-    if (!raw) return;
+  public openCourse(courseId: string) {
+    const course = getCourseById(courseId);
 
-    try {
-      const data = JSON.parse(raw);
+    this._courseId = courseId;
+    this._editingLessonId = null;
+    this._isUploading = false;
+    this._uploadProgress = 0;
+    this._error = null;
 
-      this._lessons = (data.lessons || []).map((lesson: Partial<Lesson>) => ({
-        id: lesson.id ?? Date.now().toString(),
-        title: lesson.title ?? "Новый урок",
-        content: lesson.content ?? "",
-        videoUrl: lesson.videoUrl ?? null,
-        status: lesson.status === "active" ? "active" : "archived",
-      }));
+    if (!course) {
+      this._hasCourse = false;
+      this._courseName = "";
+      this._courseDescription = "";
+      this._courseImage = "";
+      this._courseDate = "";
+      this._courseUsersCount = 0;
+      this._courseUsers = [];
+      this._lessons = [];
+      this._selectedLessonId = null;
+      this._content = "";
+      this._title = "";
+      this._videoUrl = null;
 
-      this._selectedLessonId = data.selectedLessonId || null;
-
-      const selected = this.selectedLesson;
-
-      if (selected) {
-        this._content = selected.content;
-        this._videoUrl = selected.videoUrl;
-        this._title = selected.title;
-      }
-    } catch {
-      console.error("Ошибка чтения localStorage");
+      return;
     }
+
+    this._hasCourse = true;
+    this._courseName = course.title;
+    this._courseDescription = course.description;
+    this._courseImage = course.image;
+    this._courseDate = course.date;
+    this._courseUsersCount = course.usersCount;
+    this._courseUsers = course.users.map((user) => ({ ...user }));
+    this._lessons = course.lessons.map(cloneLesson);
+
+    const hasSavedSelection =
+      typeof course.selectedLessonId === "string" &&
+      this._lessons.some((lesson) => lesson.id === course.selectedLessonId);
+
+    this._selectedLessonId = hasSavedSelection
+      ? course.selectedLessonId
+      : (this._lessons[0]?.id ?? null);
+
+    this.syncSelectedLessonState();
   }
 
   get selectedLesson() {
-    return this._lessons.find((l) => l.id === this._selectedLessonId) || null;
+    return this._lessons.find((lesson) => lesson.id === this._selectedLessonId) || null;
   }
 
   public selectLesson(id: string) {
-    const lesson = this._lessons.find((l) => l.id === id);
+    const lesson = this._lessons.find((item) => item.id === id);
 
-    if (!lesson) return;
+    if (!lesson) {
+      return;
+    }
 
     this._selectedLessonId = id;
-    this._content = lesson.content;
-    this._videoUrl = lesson.videoUrl;
-    this._title = lesson.title;
+    this.syncSelectedLessonState();
   }
 
   public createLesson() {
+    if (!this._hasCourse) {
+      return;
+    }
+
     const newLesson: Lesson = {
       id: Date.now().toString(),
-      title: "Новый урок",
+      title: DEFAULT_LESSON_TITLE,
       content: "",
       videoUrl: null,
       status: "archived",
@@ -108,17 +144,17 @@ export class CourseStore {
   }
 
   public deleteLesson(id: string) {
-    this._lessons = this._lessons.filter((l) => l.id !== id);
+    this._lessons = this._lessons.filter((lesson) => lesson.id !== id);
 
     if (this._editingLessonId === id) {
       this._editingLessonId = null;
     }
 
     if (this._selectedLessonId === id) {
-      const next = this._lessons[0];
+      const nextLesson = this._lessons[0];
 
-      if (next) {
-        this.selectLesson(next.id);
+      if (nextLesson) {
+        this.selectLesson(nextLesson.id);
       } else {
         this._selectedLessonId = null;
         this._content = "";
@@ -137,11 +173,13 @@ export class CourseStore {
   }
 
   public updateLessonTitle(id: string, title: string) {
-    const lesson = this._lessons.find((l) => l.id === id);
+    const lesson = this._lessons.find((item) => item.id === id);
 
-    if (!lesson) return;
+    if (!lesson) {
+      return;
+    }
 
-    const nextTitle = title.trim() || "Новый урок";
+    const nextTitle = title.trim() || DEFAULT_LESSON_TITLE;
 
     lesson.title = nextTitle;
 
@@ -159,7 +197,9 @@ export class CourseStore {
   }
 
   public async saveLesson() {
-    if (!this._selectedLessonId) return;
+    if (!this._selectedLessonId || !this._hasCourse) {
+      return;
+    }
 
     this._isLoading = true;
 
@@ -168,7 +208,7 @@ export class CourseStore {
 
       const lesson: Lesson = {
         id: this._selectedLessonId,
-        title: this._title,
+        title: this._title.trim() || DEFAULT_LESSON_TITLE,
         content: this._content,
         videoUrl: this._videoUrl,
         status: currentLesson?.status ?? "archived",
@@ -177,10 +217,11 @@ export class CourseStore {
       const updated = await courseRepository.saveLesson(lesson);
 
       runInAction(() => {
-        const index = this._lessons.findIndex((l) => l.id === this._selectedLessonId);
+        const index = this._lessons.findIndex((item) => item.id === this._selectedLessonId);
 
         if (index !== -1) {
           this._lessons[index] = updated;
+          this._title = updated.title;
         }
       });
     } finally {
@@ -191,14 +232,16 @@ export class CourseStore {
   }
 
   public async publishLesson() {
-    if (!this._selectedLessonId) return;
+    if (!this._selectedLessonId || !this._hasCourse) {
+      return;
+    }
 
     this._isLoading = true;
 
     try {
       const lesson: Lesson = {
         id: this._selectedLessonId,
-        title: this._title,
+        title: this._title.trim() || DEFAULT_LESSON_TITLE,
         content: this._content,
         videoUrl: this._videoUrl,
         status: "active",
@@ -207,10 +250,11 @@ export class CourseStore {
       const updated = await courseRepository.saveLesson(lesson);
 
       runInAction(() => {
-        const index = this._lessons.findIndex((l) => l.id === this._selectedLessonId);
+        const index = this._lessons.findIndex((item) => item.id === this._selectedLessonId);
 
         if (index !== -1) {
           this._lessons[index] = updated;
+          this._title = updated.title;
         }
       });
     } finally {
@@ -248,6 +292,38 @@ export class CourseStore {
 
   public getLessonStatusLabel(status: "active" | "archived") {
     return status === "active" ? "Активен" : "Архив";
+  }
+
+  get courseId() {
+    return this._courseId;
+  }
+
+  get courseName() {
+    return this._courseName;
+  }
+
+  get courseDescription() {
+    return this._courseDescription;
+  }
+
+  get courseImage() {
+    return this._courseImage;
+  }
+
+  get courseDate() {
+    return this._courseDate;
+  }
+
+  get courseUsersCount() {
+    return this._courseUsersCount;
+  }
+
+  get courseUsers() {
+    return this._courseUsers;
+  }
+
+  get hasCourse() {
+    return this._hasCourse;
   }
 
   get lessons() {
