@@ -2,6 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useEffect } from "react";
 
 import { Button } from "@/shared/components/Button";
 import { Input } from "@/shared/components/Input/Input";
@@ -11,20 +12,58 @@ import eyeClosed from "./assets/eye-off.svg";
 import eyeOpen from "./assets/eye-on.svg";
 import styles from "./RegistrationForm.module.scss";
 
-const RegistrationFormView = () => {
+type RegistrationFormProps = {
+  registrationUuid?: string;
+};
+
+const RegistrationFormView = ({ registrationUuid }: RegistrationFormProps) => {
   const { register } = useStores();
+
+  useEffect(() => {
+    if (!registrationUuid) {
+      return;
+    }
+
+    void register.loadInvitation(registrationUuid);
+
+    return () => {
+      register.resetState();
+    };
+  }, [register, registrationUuid]);
+
+  if (!registrationUuid) {
+    return (
+      <p className={styles.errorText}>Ссылка регистрации не содержит идентификатор приглашения.</p>
+    );
+  }
+
+  if (register.isInvitationLoading) {
+    return <p className={styles.stateText}>Загрузка приглашения...</p>;
+  }
+
+  if (register.isCompleted) {
+    return <p className={styles.stateText}>Регистрация завершена. Перенаправляем на вход...</p>;
+  }
 
   return (
     <form className={styles.form}>
       <Input
         className={styles.input}
-        label="ФИО*"
-        placeholder="Введите ваше ФИО"
-        value={register.values.name}
-        onChange={(e) => register.setField("name", e.target.value)}
-        onBlur={() => register.setTouched("name")}
-        error={register.touched.name ? register.errors.name : ""}
+        label="Email"
+        value={register.invitationEmail}
+        disabled
+        readOnly
       />
+
+      {!!register.invitationCompanyName && (
+        <Input
+          className={styles.input}
+          label="Пространство"
+          value={register.invitationCompanyName}
+          disabled
+          readOnly
+        />
+      )}
 
       <Input
         className={styles.input}
@@ -66,14 +105,16 @@ const RegistrationFormView = () => {
 
       <Button
         className={styles.submitBtn}
-        disabled={!register.isValid}
+        disabled={!register.isValid || register.isSubmitting}
         onClick={(e) => {
           e.preventDefault();
-          register.submit();
+          void register.submit(registrationUuid);
         }}
       >
-        Завершить регистрацию
+        {register.isSubmitting ? "Сохраняем..." : "Завершить регистрацию"}
       </Button>
+
+      {register.error && <p className={styles.errorText}>{register.error}</p>}
     </form>
   );
 };
