@@ -4,8 +4,6 @@ const DEFAULT_HEADERS: HeadersInit = {
   "Content-Type": "application/json",
 };
 
-const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
-
 export class RestProvider {
   private readonly baseUrl: string;
   private readonly useBffProxy: boolean;
@@ -26,13 +24,13 @@ export class RestProvider {
   }
 
   /**
-   * Django DRF в проекте ожидает trailing slash для mutating endpoint'ов.
+   * Django DRF в проекте ожидает trailing slash для endpoint'ов API v1.
    * Нормализуем `/api/v1/resource` -> `/api/v1/resource/`, сохраняя query string.
    */
-  private normalizePathForRequest(path: string, method: string): string {
+  private normalizePathForRequest(path: string): string {
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
-    if (!MUTATION_METHODS.has(method.toUpperCase()) || !normalizedPath.startsWith("/api/v1/")) {
+    if (!normalizedPath.startsWith("/api/v1/")) {
       return normalizedPath;
     }
 
@@ -47,7 +45,7 @@ export class RestProvider {
   }
 
   private async request<T>(method: string, path: string, options: RequestInit = {}): Promise<T> {
-    const normalizedPath = this.normalizePathForRequest(path, method);
+    const normalizedPath = this.normalizePathForRequest(path);
     const url = this.resolveUrl(normalizedPath);
     const useCredentials = this.useBffProxy && typeof window !== "undefined";
 

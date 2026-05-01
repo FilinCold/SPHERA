@@ -41,8 +41,26 @@ const RegistrationFormView = ({ registrationUuid }: RegistrationFormProps) => {
     return <p className={styles.stateText}>Загрузка приглашения...</p>;
   }
 
+  const isInvitationNotResolvedYet =
+    Boolean(registrationUuid) &&
+    !register.invitationEmail &&
+    !register.error &&
+    !register.isCompleted;
+
+  if (isInvitationNotResolvedYet) {
+    return <p className={styles.stateText}>Загрузка приглашения...</p>;
+  }
+
   if (register.isCompleted) {
     return <p className={styles.stateText}>Регистрация завершена. Перенаправляем на вход...</p>;
+  }
+
+  if (register.isInvalidInvitation) {
+    return (
+      <p className={styles.errorText}>
+        {register.error ?? "Ссылка недействительна или устарела. Проверьте ссылку приглашения."}
+      </p>
+    );
   }
 
   return (
@@ -105,7 +123,7 @@ const RegistrationFormView = ({ registrationUuid }: RegistrationFormProps) => {
 
       <Button
         className={styles.submitBtn}
-        disabled={!register.isValid || register.isSubmitting}
+        disabled={!register.isRegistrationFormFilled || !register.isValid || register.isSubmitting}
         onClick={(e) => {
           e.preventDefault();
           void register.submit(registrationUuid);

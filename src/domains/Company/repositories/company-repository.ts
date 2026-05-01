@@ -13,6 +13,7 @@ import type {
   CompanyListItem,
   CreateCompanyResponse,
   CreateCompanySubscriptionPayload,
+  UpdateCompanyEmployeeProfilePayload,
   UpdateCompanyEmployeePayload,
   UpdateCompanyPayload,
   UpdateCompanySubscriptionPayload,
@@ -45,8 +46,17 @@ export class CompanyRepository {
 
     const nameRaw = source.name;
     const name = typeof nameRaw === "string" ? nameRaw.trim() : "";
+    const registrationStatusRaw = source.registration_status;
+    const registrationStatus =
+      typeof registrationStatusRaw === "string" ? registrationStatusRaw.trim() : "";
 
-    return { id, name, email, role };
+    return {
+      id,
+      name,
+      email,
+      role,
+      ...(registrationStatus ? { registrationStatus } : {}),
+    };
   }
 
   /** GET `/api/v1/companies/{slug}/employees/?limit=…&offset=…` — список сотрудников пространства. */
@@ -220,6 +230,18 @@ export class CompanyRepository {
     payload: UpdateCompanyEmployeePayload,
   ): Promise<unknown> {
     return restProviderInstance.patch<unknown, UpdateCompanyEmployeePayload>(
+      `/api/v1/companies/${encodeURIComponent(slug)}/employees/${encodeURIComponent(employeeId)}/`,
+      payload,
+    );
+  }
+
+  /** PATCH `/api/v1/companies/{slug}/employees/{id}/` */
+  public async updateCompanyEmployee(
+    slug: string,
+    employeeId: string,
+    payload: UpdateCompanyEmployeeProfilePayload,
+  ): Promise<unknown> {
+    return restProviderInstance.patch<unknown, UpdateCompanyEmployeeProfilePayload>(
       `/api/v1/companies/${encodeURIComponent(slug)}/employees/${encodeURIComponent(employeeId)}/`,
       payload,
     );
