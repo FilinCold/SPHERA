@@ -1,11 +1,20 @@
 export type RegistrationFormValues = {
-  name: string;
   password: string;
   confirmPassword: string;
 };
 
 export type RegistrationFormErrors = {
-  name: string;
   password: string;
   confirmPassword: string;
+};
+
+export type RegistrationInvite = {
+  email: string;
+  role: string;
+  companyName: string;
+};
+
+export type CompleteRegistrationPayload = {
+  password: string;
+  repeatPassword: string;
 };
