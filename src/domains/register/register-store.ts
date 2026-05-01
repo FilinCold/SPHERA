@@ -8,6 +8,7 @@ import { RegisterRepository } from "./repository";
 import type { RegistrationFormErrors, RegistrationFormValues } from "./model";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const INVALID_INVITE_MARKERS = ["недействитель", "устарел", "некорректн", "not found"];
 
 export class RegisterStore {
   values: RegistrationFormValues = {
@@ -29,6 +30,7 @@ export class RegisterStore {
   isSubmitting = false;
   error: string | null = null;
   isCompleted = false;
+  isInvalidInvitation = false;
 
   private readonly repository = new RegisterRepository();
 
@@ -47,6 +49,14 @@ export class RegisterStore {
 
   get isValid() {
     return Object.values(this.errors).every((error) => !error);
+  }
+
+  get isRegistrationFormFilled() {
+    return (
+      this.invitationEmail.trim().length > 0 &&
+      this.values.password.trim().length > 0 &&
+      this.values.confirmPassword.trim().length > 0
+    );
   }
 
   setField(field: keyof RegistrationFormValues, value: string | boolean) {
@@ -73,6 +83,7 @@ export class RegisterStore {
     if (!UUID_REGEX.test(registrationUuid)) {
       this.error = "Некорректная ссылка приглашения";
       this.isInvitationLoading = false;
+      this.isInvalidInvitation = true;
 
       return;
     }
@@ -85,6 +96,7 @@ export class RegisterStore {
     this.isInvitationLoading = true;
     this.error = null;
     this.isCompleted = false;
+    this.isInvalidInvitation = false;
 
     try {
       const invite = await this.repository.fetchInvitation(registrationUuid);
@@ -93,7 +105,12 @@ export class RegisterStore {
       this.invitationRole = invite.role;
       this.invitationCompanyName = invite.companyName;
     } catch (error) {
-      this.error = error instanceof Error ? error.message : "Не удалось загрузить приглашение";
+      const message = error instanceof Error ? error.message : "Не удалось загрузить приглашение";
+
+      this.error = message;
+      this.isInvalidInvitation = INVALID_INVITE_MARKERS.some((marker) =>
+        message.toLowerCase().includes(marker),
+      );
     } finally {
       this.isInvitationLoading = false;
     }
@@ -117,6 +134,7 @@ export class RegisterStore {
     this.isSubmitting = false;
     this.error = null;
     this.isCompleted = false;
+    this.isInvalidInvitation = false;
   }
 
   async submit(registrationUuid: string) {
@@ -125,7 +143,7 @@ export class RegisterStore {
       confirmPassword: true,
     };
 
-    if (!this.isValid) {
+    if (!this.isRegistrationFormFilled || !this.isValid) {
       return;
     }
 
@@ -143,7 +161,12 @@ export class RegisterStore {
         window.location.assign(PAGES.LOGIN);
       }
     } catch (error) {
-      this.error = error instanceof Error ? error.message : "Не удалось завершить регистрацию";
+      const message = error instanceof Error ? error.message : "Не удалось завершить регистрацию";
+
+      this.error = message;
+      this.isInvalidInvitation = INVALID_INVITE_MARKERS.some((marker) =>
+        message.toLowerCase().includes(marker),
+      );
     } finally {
       this.isSubmitting = false;
     }

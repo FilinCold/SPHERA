@@ -70,6 +70,7 @@ const UsersListPage = observer(() => {
                 {
                   label: "Роль*",
                   type: "select",
+                  placeholder: "Выберите роль",
                   value: popupStore.role,
                   onChange: popupStore.setRole,
                   options: [
@@ -80,18 +81,19 @@ const UsersListPage = observer(() => {
                 {
                   label: "ФИО*",
                   type: "text",
-                  placeholder: "Сидоров Иван Петрович",
+                  placeholder: "Введите ФИО",
                   value: popupStore.fio,
                   onChange: popupStore.setFio,
                 },
                 {
-                  label: "Email*",
+                  label: "Email администратора*",
                   type: "email",
-                  placeholder: "user@example.ru",
+                  placeholder: "Введите имя",
                   value: popupStore.email,
                   onChange: popupStore.setEmail,
                 },
               ]}
+              submitText="Сохранить"
               onSubmit={handleSubmit}
               onCancel={handleCancel}
             />

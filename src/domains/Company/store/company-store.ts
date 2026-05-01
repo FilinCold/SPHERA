@@ -32,6 +32,15 @@ export class CompanyStore {
   private _companyAdmins: CompanyEmployeeItem[] = [];
   private _isCompanyAdminsLoading = false;
   private _companyAdminsError: string | null = null;
+  private _companyEmployees: CompanyEmployeeItem[] = [];
+  private _isCompanyEmployeesLoading = false;
+  private _companyEmployeesError: string | null = null;
+  private _companyForEditInFlightId: string | null = null;
+  private _companyForEditInFlightPromise: Promise<void> | null = null;
+  private _companyAdminsInFlightSlug: string | null = null;
+  private _companyAdminsInFlightPromise: Promise<void> | null = null;
+  private _companyEmployeesInFlightSlug: string | null = null;
+  private _companyEmployeesInFlightPromise: Promise<void> | null = null;
 
   constructor(private readonly root: RootStore) {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -133,6 +142,18 @@ export class CompanyStore {
     return this._companyAdminsError;
   }
 
+  get companyEmployees() {
+    return this._companyEmployees;
+  }
+
+  get isCompanyEmployeesLoading() {
+    return this._isCompanyEmployeesLoading;
+  }
+
+  get companyEmployeesError() {
+    return this._companyEmployeesError;
+  }
+
   public async createCompany(name: string): Promise<boolean> {
     const trimmed = name.trim();
 
@@ -231,12 +252,19 @@ export class CompanyStore {
    * @param pageIndex — страница с 0 (первая: 0 → `offset=0`, вторая: 1 → `offset=5` при размере 5).
    */
   public async loadCompaniesList(pageIndex = 0, searchQuery?: string) {
+    const effectiveSearchQuery =
+      typeof searchQuery === "string" ? searchQuery.trim() : this._companiesSearchQuery;
+    const isSameRequest =
+      pageIndex === this._companiesPageIndex && effectiveSearchQuery === this._companiesSearchQuery;
+
+    if (this._isCompaniesListLoading && isSameRequest) {
+      return;
+    }
+
     this._isCompaniesListLoading = true;
     this._companiesListError = null;
 
     const limit = COMPANIES_LIST_PAGE_SIZE;
-    const effectiveSearchQuery =
-      typeof searchQuery === "string" ? searchQuery.trim() : this._companiesSearchQuery;
 
     try {
       let offset = pageIndex * limit;
@@ -331,25 +359,43 @@ export class CompanyStore {
       return;
     }
 
+    if (this._companyForEditInFlightId === trimmed && this._companyForEditInFlightPromise) {
+      return this._companyForEditInFlightPromise;
+    }
+
     this._isCompanyForEditLoading = true;
     this._companyForEditError = null;
 
-    try {
-      const company = await companyRepository.getCompanyById(trimmed);
+    const request = (async () => {
+      try {
+        const company = await companyRepository.getCompanyById(trimmed);
 
-      runInAction(() => {
-        this._companyForEdit = company;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this._companyForEdit = null;
-        this._companyForEditError =
-          err instanceof Error ? err.message : "Не удалось загрузить пространство";
-      });
+        runInAction(() => {
+          this._companyForEdit = company;
+        });
+      } catch (err) {
+        runInAction(() => {
+          this._companyForEdit = null;
+          this._companyForEditError =
+            err instanceof Error ? err.message : "Не удалось загрузить пространство";
+        });
+      } finally {
+        runInAction(() => {
+          this._isCompanyForEditLoading = false;
+        });
+      }
+    })();
+
+    this._companyForEditInFlightId = trimmed;
+    this._companyForEditInFlightPromise = request;
+
+    try {
+      await request;
     } finally {
-      runInAction(() => {
-        this._isCompanyForEditLoading = false;
-      });
+      if (this._companyForEditInFlightPromise === request) {
+        this._companyForEditInFlightId = null;
+        this._companyForEditInFlightPromise = null;
+      }
     }
   }
 
@@ -362,7 +408,65 @@ export class CompanyStore {
       this._companyAdmins = [];
       this._isCompanyAdminsLoading = false;
       this._companyAdminsError = null;
+      this._companyEmployees = [];
+      this._isCompanyEmployeesLoading = false;
+      this._companyEmployeesError = null;
     });
+  }
+
+  public async loadCompanyEmployees(slug: string) {
+    const normalizedSlug = slug.trim();
+
+    if (!normalizedSlug) {
+      runInAction(() => {
+        this._companyEmployees = [];
+        this._companyEmployeesError = null;
+      });
+
+      return;
+    }
+
+    if (
+      this._companyEmployeesInFlightSlug === normalizedSlug &&
+      this._companyEmployeesInFlightPromise
+    ) {
+      return this._companyEmployeesInFlightPromise;
+    }
+
+    this._isCompanyEmployeesLoading = true;
+    this._companyEmployeesError = null;
+
+    const request = (async () => {
+      try {
+        const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
+
+        runInAction(() => {
+          this._companyEmployees = employees;
+        });
+      } catch (err) {
+        runInAction(() => {
+          this._companyEmployees = [];
+          this._companyEmployeesError =
+            err instanceof Error ? err.message : "Не удалось загрузить список пользователей";
+        });
+      } finally {
+        runInAction(() => {
+          this._isCompanyEmployeesLoading = false;
+        });
+      }
+    })();
+
+    this._companyEmployeesInFlightSlug = normalizedSlug;
+    this._companyEmployeesInFlightPromise = request;
+
+    try {
+      await request;
+    } finally {
+      if (this._companyEmployeesInFlightPromise === request) {
+        this._companyEmployeesInFlightSlug = null;
+        this._companyEmployeesInFlightPromise = null;
+      }
+    }
   }
 
   public async loadCompanyAdmins(slug: string) {
@@ -377,28 +481,46 @@ export class CompanyStore {
       return;
     }
 
+    if (this._companyAdminsInFlightSlug === normalizedSlug && this._companyAdminsInFlightPromise) {
+      return this._companyAdminsInFlightPromise;
+    }
+
     this._isCompanyAdminsLoading = true;
     this._companyAdminsError = null;
 
-    try {
-      const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
-      const admins = employees.filter(
-        (employee) => employee.role.toUpperCase() === "COMPANY ADMIN",
-      );
+    const request = (async () => {
+      try {
+        const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
+        const admins = employees.filter(
+          (employee) => employee.role.toUpperCase() === "COMPANY ADMIN",
+        );
 
-      runInAction(() => {
-        this._companyAdmins = admins;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this._companyAdmins = [];
-        this._companyAdminsError =
-          err instanceof Error ? err.message : "Не удалось загрузить список администраторов";
-      });
+        runInAction(() => {
+          this._companyAdmins = admins;
+        });
+      } catch (err) {
+        runInAction(() => {
+          this._companyAdmins = [];
+          this._companyAdminsError =
+            err instanceof Error ? err.message : "Не удалось загрузить список администраторов";
+        });
+      } finally {
+        runInAction(() => {
+          this._isCompanyAdminsLoading = false;
+        });
+      }
+    })();
+
+    this._companyAdminsInFlightSlug = normalizedSlug;
+    this._companyAdminsInFlightPromise = request;
+
+    try {
+      await request;
     } finally {
-      runInAction(() => {
-        this._isCompanyAdminsLoading = false;
-      });
+      if (this._companyAdminsInFlightPromise === request) {
+        this._companyAdminsInFlightSlug = null;
+        this._companyAdminsInFlightPromise = null;
+      }
     }
   }
 
@@ -494,6 +616,129 @@ export class CompanyStore {
     } finally {
       runInAction(() => {
         this._isCompanyAdminsLoading = false;
+      });
+    }
+  }
+
+  public async updateCompanyEmployeeProfile(
+    slug: string,
+    employeeId: string,
+    input: { name: string; email: string; role: "COMPANY ADMIN" | "COMPANY USER" },
+  ): Promise<boolean> {
+    const normalizedSlug = slug.trim();
+    const normalizedEmployeeId = employeeId.trim();
+    const normalizedName = input.name.trim();
+    const normalizedEmail = input.email.trim();
+    const normalizedRole = input.role;
+
+    if (!normalizedSlug || !normalizedEmployeeId || !normalizedName || !normalizedEmail) {
+      return false;
+    }
+
+    this._isCompanyEmployeesLoading = true;
+    this._companyEmployeesError = null;
+
+    try {
+      await companyRepository.updateCompanyEmployee(normalizedSlug, normalizedEmployeeId, {
+        name: normalizedName,
+        email: normalizedEmail,
+        role: normalizedRole,
+      });
+
+      const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
+
+      runInAction(() => {
+        this._companyEmployees = employees;
+      });
+
+      return true;
+    } catch (err) {
+      runInAction(() => {
+        this._companyEmployeesError =
+          err instanceof Error ? err.message : "Не удалось обновить данные пользователя";
+      });
+
+      return false;
+    } finally {
+      runInAction(() => {
+        this._isCompanyEmployeesLoading = false;
+      });
+    }
+  }
+
+  public async createCompanyEmployee(
+    slug: string,
+    input: { name: string; email: string; role: "COMPANY ADMIN" | "COMPANY USER" },
+  ): Promise<boolean> {
+    const normalizedSlug = slug.trim();
+    const normalizedName = input.name.trim();
+    const normalizedEmail = input.email.trim();
+
+    if (!normalizedSlug || !normalizedName || !normalizedEmail) {
+      return false;
+    }
+
+    this._isCompanyEmployeesLoading = true;
+    this._companyEmployeesError = null;
+
+    try {
+      await companyRepository.inviteCompanyAdmin(normalizedSlug, {
+        name: normalizedName,
+        email: normalizedEmail,
+        role: input.role,
+      });
+
+      const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
+
+      runInAction(() => {
+        this._companyEmployees = employees;
+      });
+
+      return true;
+    } catch (err) {
+      runInAction(() => {
+        this._companyEmployeesError =
+          err instanceof Error ? err.message : "Не удалось добавить пользователя";
+      });
+
+      return false;
+    } finally {
+      runInAction(() => {
+        this._isCompanyEmployeesLoading = false;
+      });
+    }
+  }
+
+  public async deleteCompanyEmployee(slug: string, employeeId: string): Promise<boolean> {
+    const normalizedSlug = slug.trim();
+    const normalizedEmployeeId = employeeId.trim();
+
+    if (!normalizedSlug || !normalizedEmployeeId) {
+      return false;
+    }
+
+    this._isCompanyEmployeesLoading = true;
+    this._companyEmployeesError = null;
+
+    try {
+      await companyRepository.deleteCompanyAdmin(normalizedSlug, normalizedEmployeeId);
+      const employees = await companyRepository.listCompanyEmployees(normalizedSlug);
+
+      runInAction(() => {
+        this._companyEmployees = employees;
+      });
+
+      return true;
+    } catch (err) {
+      runInAction(() => {
+        this._companyEmployeesError =
+          err instanceof Error ? err.message : "Не удалось удалить пользователя";
+      });
+
+      return false;
+    } finally {
+      runInAction(() => {
+        this._isCompanyEmployeesLoading = false;
       });
     }
   }

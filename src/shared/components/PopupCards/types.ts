@@ -10,6 +10,7 @@ export type InputType = {
   value: string | number;
   onChange: (value: string) => void;
   options?: SelectOption[];
+  disabled?: boolean;
 };
 
 export interface PopupCardProps {
@@ -17,4 +18,7 @@ export interface PopupCardProps {
   inputs: InputType[];
   onSubmit: () => void;
   onCancel: () => void;
+  submitText?: string;
+  cancelText?: string;
+  submitDisabled?: boolean;
 }

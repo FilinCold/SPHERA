@@ -1,25 +1,31 @@
 .card {
   width: 432px;
-  height: 529px;
+  min-height: 474px;
   background: #ffffff;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1.2px 6px 0 rgba(0, 0, 0, 0.25);
   overflow: hidden;
 }
 
 .header {
-  background: #1f8fa3;
+  background: #0b99c1;
   color: #fff;
-  padding: 16px 20px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
 }
 
 .body {
   flex: 1;
-  padding: 20px;
+  padding: 32px 24px 33px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -32,60 +38,88 @@
 }
 
 .label {
-  font-size: 14px;
-  color: #333;
+  font-size: 16px;
+  color: #232426;
+  line-height: 1.3;
 }
 
 .input {
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1px solid #dcdcdc;
-  font-size: 14px;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 4px;
+  border: 1px solid #b2b1b7;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #232426;
   outline: none;
-  transition: border 0.2s;
+  transition: border-color 0.2s;
+  width: 100%;
+  background: #fff;
 }
 
 .input:focus {
-  border-color: #1f8fa3;
+  border-color: #0b99c1;
+}
+
+.input::placeholder {
+  color: #b2b1b7;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 7L9 12L14 7' stroke='%230B99C1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
 }
 
 .footer {
   display: flex;
-  justify-content: space-between;
-  padding: 16px 20px 20px;
-  gap: 12px;
+  justify-content: center;
+  padding: 0 24px 32px;
+  gap: 16px;
 }
 
 .cancel {
   flex: 1;
-  height: 44px;
-  border-radius: 12px;
-  border: 2px solid #1f8fa3;
+  max-width: 184px;
+  height: 45px;
+  border-radius: 8px;
+  border: 1px solid #0b99c1;
   background: #fff;
-  color: #1f8fa3;
+  color: #0b99c1;
   font-weight: 500;
+  font-size: 16px;
+  line-height: 1.3;
   cursor: pointer;
-  transition: all 0.2s;
+  box-shadow: 0 1.2px 6px 0 rgba(0, 0, 0, 0.25);
 }
 
 .cancel:hover {
-  background: #f3fbfd;
+  background: #f0ffff;
 }
 
 .submit {
   flex: 1;
-  height: 44px;
-  border-radius: 12px;
+  max-width: 184px;
+  height: 45px;
+  border-radius: 8px;
   border: none;
-  background: #1f8fa3;
+  background: #0b99c1;
   color: #fff;
   font-weight: 500;
+  font-size: 16px;
+  line-height: 1.3;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(31, 143, 163, 0.3);
-  transition: all 0.2s;
+  box-shadow: 0 1.2px 6px 0 rgba(0, 0, 0, 0.25);
 }
 
 .submit:hover {
-  background: #187c8e;
+  background: #078ab0;
+}
+
+.submit:disabled {
+  background: #b2b1b7;
+  box-shadow: none;
+  cursor: not-allowed;
 }

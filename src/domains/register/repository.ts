@@ -45,6 +45,10 @@ export class RegisterRepository {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Ссылка недействительна или устарела. Проверьте ссылку приглашения.");
+      }
+
       throw new Error(await parseErrorMessage(response, "Ссылка приглашения недействительна"));
     }
 
@@ -78,6 +82,10 @@ export class RegisterRepository {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Ссылка недействительна или устарела. Проверьте ссылку приглашения.");
+      }
+
       throw new Error(await parseErrorMessage(response, "Не удалось завершить регистрацию"));
     }
   }
