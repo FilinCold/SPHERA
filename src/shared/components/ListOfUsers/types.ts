@@ -1,7 +1,7 @@
-export type UserStatus = "active" | "blocked";
+export type UserStatus = "active" | "blocked" | "awaiting";
 
 export interface User {
-  id: number;
+  id: string;
   fullName: string;
   email: string;
   role: string;

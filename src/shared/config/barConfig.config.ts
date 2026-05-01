@@ -92,4 +92,10 @@ export const TITLE_BAR_CONFIG_BY_ROUTE: Record<string, RouteConfig> = {
     actionText: "Добавить сотрудника",
     actionHref: "/edit-data",
   },
+  "/users": {
+    title: "Пользователи",
+    breadcrumbs: [{ label: "Пользователи" }],
+    searchPlaceholder: "Поиск по пользователям",
+    actionText: "Добавить пользователя",
+  },
 };

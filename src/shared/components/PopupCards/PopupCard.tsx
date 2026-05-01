@@ -4,7 +4,15 @@ import styles from "./PopupCard.module.scss";
 
 import type { PopupCardProps } from "./types";
 
-const PopupCard: React.FC<PopupCardProps> = ({ title, inputs = [], onSubmit, onCancel }) => {
+const PopupCard: React.FC<PopupCardProps> = ({
+  title,
+  inputs = [],
+  onSubmit,
+  onCancel,
+  submitText = "Сохранить",
+  cancelText = "Отмена",
+  submitDisabled = false,
+}) => {
   return (
     <div className={styles.card}>
       <div className={styles.header}>{title}</div>
@@ -18,8 +26,12 @@ const PopupCard: React.FC<PopupCardProps> = ({ title, inputs = [], onSubmit, onC
               <select
                 value={input.value}
                 onChange={(e) => input.onChange(e.target.value)}
-                className={styles.input}
+                className={`${styles.input} ${styles.select}`}
+                disabled={input.disabled}
               >
+                <option value="" disabled>
+                  {input.placeholder ?? "Выберите значение"}
+                </option>
                 {input.options?.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -33,6 +45,7 @@ const PopupCard: React.FC<PopupCardProps> = ({ title, inputs = [], onSubmit, onC
                 value={input.value}
                 onChange={(e) => input.onChange(e.target.value)}
                 className={styles.input}
+                disabled={input.disabled}
               />
             )}
           </div>
@@ -40,11 +53,16 @@ const PopupCard: React.FC<PopupCardProps> = ({ title, inputs = [], onSubmit, onC
       </div>
 
       <div className={styles.footer}>
-        <button className={styles.cancel} onClick={onCancel}>
-          Отмена
+        <button type="button" className={styles.cancel} onClick={onCancel}>
+          {cancelText}
         </button>
-        <button className={styles.submit} onClick={onSubmit}>
-          Создать
+        <button
+          type="button"
+          className={styles.submit}
+          onClick={onSubmit}
+          disabled={submitDisabled}
+        >
+          {submitText}
         </button>
       </div>
     </div>

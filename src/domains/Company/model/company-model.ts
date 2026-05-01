@@ -56,13 +56,19 @@ export type UpdateCompanySubscriptionPayload = {
 export type CreateCompanyEmployeePayload = {
   name: string;
   email: string;
-  role: "COMPANY ADMIN";
+  role: "COMPANY ADMIN" | "COMPANY USER";
 };
 
 export type UpdateCompanyEmployeePayload = {
   name: string;
   email: string;
-  role: "COMPANY ADMIN";
+  role: "COMPANY ADMIN" | "COMPANY USER";
+};
+
+export type UpdateCompanyEmployeeProfilePayload = {
+  name: string;
+  email: string;
+  role: "COMPANY ADMIN" | "COMPANY USER";
 };
 
 export type SaveCompanyEditInput = {
@@ -81,6 +87,7 @@ export type CompanyEmployeeItem = {
   name: string;
   email: string;
   role: string;
+  registrationStatus?: string;
 };
 
 export type CreateSpaceSetupInput = {
