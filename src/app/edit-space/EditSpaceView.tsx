@@ -146,12 +146,30 @@ function EditSpaceViewComponent() {
   }, [companySlug, companyForEdit, handoff]);
 
   const spaceTitle = useMemo(() => {
-    if (companyForEdit?.name?.trim()) {
-      return companyForEdit.name.trim();
+    const fromApi = companyForEdit?.name?.trim();
+
+    if (fromApi) {
+      return fromApi;
     }
 
-    return handoff?.spaceName?.trim() || "Пространство";
-  }, [companyForEdit, handoff]);
+    const fromHandoff = handoff?.spaceName?.trim();
+
+    if (fromHandoff) {
+      return fromHandoff;
+    }
+
+    const slug = companySlug?.trim();
+
+    if (slug) {
+      try {
+        return decodeURIComponent(slug);
+      } catch {
+        return slug;
+      }
+    }
+
+    return "Пространство";
+  }, [companyForEdit, handoff, companySlug]);
 
   const requestInitial = useMemo((): Partial<FormData> => {
     if (companySlug && companyForEdit) {

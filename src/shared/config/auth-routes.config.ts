@@ -12,7 +12,7 @@ export const PUBLIC_ROUTE_PATHNAMES: readonly string[] = [
 ];
 
 export const isPublicRoutePathname = (pathname: string): boolean =>
-  PUBLIC_ROUTE_PATHNAMES.includes(pathname);
+  PUBLIC_ROUTE_PATHNAMES.includes(pathname) || pathname.startsWith(`${PAGES.REGISTRATION}/`);
 
 export const isApiRoutePathname = (pathname: string): boolean => pathname.startsWith("/api");
 
